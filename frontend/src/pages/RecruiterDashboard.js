@@ -6,6 +6,8 @@ import { jobAPI } from '../services/api';
 const RecruiterDashboard = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [isPostJobOpen, setIsPostJobOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const loadJobs = async () => {
     try {
@@ -16,6 +18,12 @@ const RecruiterDashboard = () => {
     }
   };
 
+  const handleJobCreated = () => {
+    loadJobs();
+    setSuccessMessage('Job posted successfully! 🎉');
+    setTimeout(() => setSuccessMessage(''), 3000);
+  };
+
   useEffect(() => {
     loadJobs();
   }, []);
@@ -24,18 +32,41 @@ const RecruiterDashboard = () => {
     <div style={{ backgroundColor: 'var(--bg-secondary)', minHeight: '100vh', paddingTop: 'var(--spacing-lg)' }}>
       <div className="main-container">
         <div className="mb-xl">
-          <h1 className="page-title">
-            <span className="icon-lg" style={{ marginRight: 'var(--spacing-sm)' }}>👔</span>
-            Recruiter Dashboard
-          </h1>
-          <p className="page-subtitle">Post jobs and find the perfect candidates with AI-powered matching</p>
+          <div className="flex items-center justify-between mb-sm">
+            <div>
+              <h1 className="page-title">
+                <span className="icon-lg" style={{ marginRight: 'var(--spacing-sm)' }}>👔</span>
+                Recruiter Dashboard
+              </h1>
+              <p className="page-subtitle">Post jobs and find the perfect candidates with AI-powered matching</p>
+            </div>
+            <button 
+              onClick={() => setIsPostJobOpen(true)}
+              className="btn-primary-custom"
+              style={{ height: '48px', fontSize: '16px', fontWeight: '600' }}
+            >
+              <span style={{ marginRight: '8px' }}>+</span>
+              Post New Job
+            </button>
+          </div>
+          
+          {successMessage && (
+            <div style={{
+              padding: '12px 16px',
+              borderRadius: 'var(--radius)',
+              marginBottom: '20px',
+              backgroundColor: '#f0fdf4',
+              color: 'var(--success-color)',
+              border: '1px solid #bbf7d0'
+            }}>
+              {successMessage}
+            </div>
+          )}
         </div>
         
         <div className="grid-dashboard">
           <div>
-            <JobForm onJobCreated={loadJobs} />
-            
-            <div className="card-custom" style={{ marginTop: 'var(--spacing-lg)' }}>
+            <div className="card-custom">
               <div className="card-header-custom flex items-center justify-between">
                 <h3 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>
                   <span className="icon-md" style={{ marginRight: 'var(--spacing-xs)' }}>💼</span>
@@ -48,7 +79,7 @@ const RecruiterDashboard = () => {
                   <div className="empty-state">
                     <div className="empty-icon">💼</div>
                     <h4 style={{ color: 'var(--text-primary)' }}>No jobs posted yet</h4>
-                    <p>Create your first job posting to get started</p>
+                    <p>Click "Post New Job" to get started</p>
                   </div>
                 ) : (
                   jobs.map((job) => (
@@ -139,6 +170,14 @@ const RecruiterDashboard = () => {
           </div>
         </div>
       </div>
+      
+      {/* Job Form Modal */}
+      {isPostJobOpen && (
+        <JobForm 
+          onJobCreated={handleJobCreated}
+          onClose={() => setIsPostJobOpen(false)}
+        />
+      )}
     </div>
   );
 };

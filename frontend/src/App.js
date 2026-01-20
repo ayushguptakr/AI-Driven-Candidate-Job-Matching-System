@@ -13,12 +13,14 @@ function App() {
         boxShadow: 'var(--shadow-md)'
       }}>
         <div className="main-container flex items-center justify-between">
+          <Link to="/" style={{ textDecoration: 'none' }}>
           <h1 style={{
             color: 'white',
             fontSize: '1.5rem',
             fontWeight: '600',
             margin: 0
-          }}>🤖 AI Job Matching</h1>
+          }}>🤖 TalentMatch AI</h1>
+          </Link>
           <div className="flex gap-md">
             <Link to="/recruiter" style={{
               color: 'white',
@@ -52,6 +54,9 @@ function App() {
                 🚀 AI-Driven Job Matching
               </h1>
               <p style={{ fontSize: '1.25rem', marginBottom: '48px', opacity: 0.9 }}>
+               <h3> AI-Powered Job Matching Made Simple  </h3> 
+                Connect recruiters with the right talent and help candidates find jobs that match their skills. <br/>
+                Our platform uses intelligent resume and job analysis to deliver faster, smarter, and more accurate hiring decisions.<br/>
                 Connect talent with opportunity using intelligent AI matching
               </p>
               <div className="grid-2" style={{ maxWidth: '600px', margin: '0 auto' }}>

@@ -121,7 +121,7 @@ const CandidateDashboard = () => {
                           <span className="badge-custom badge-primary">{job.company}</span>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: 'var(--spacing-xs)' }}>
-                          <span className="icon-sm">📍</span> {job.location} • <span className="icon-sm">💰</span> {job.salary}
+                          <span className="icon-sm">📍</span> {job.location} • <span className="icon-sm"> </span> {job.salary}
                         </div>
                         <p style={{ 
                           fontSize: '0.75rem', 
