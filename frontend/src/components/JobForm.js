@@ -90,7 +90,7 @@ const JobForm = ({ onJobCreated, onClose }) => {
                     className="form-control-custom"
                     value={job.title}
                     onChange={(e) => setJob({...job, title: e.target.value})}
-                    placeholder="e.g. Full Stack Developer"
+                    placeholder="e.g. Software Engineer"
                     required
                   />
                 </div>
@@ -100,7 +100,7 @@ const JobForm = ({ onJobCreated, onClose }) => {
                     className="form-control-custom"
                     value={job.company}
                     onChange={(e) => setJob({...job, company: e.target.value})}
-                    placeholder="e.g. Tech Corp"
+                    placeholder="Your Company Name"
                     required
                   />
                 </div>
@@ -137,7 +137,6 @@ const JobForm = ({ onJobCreated, onClose }) => {
                     className="form-control-custom"
                     value={job.location}
                     onChange={(e) => setJob({...job, location: e.target.value})}
-                    placeholder="Remote / City, State"
                     required
                   />
                 </div>
@@ -147,7 +146,6 @@ const JobForm = ({ onJobCreated, onClose }) => {
                     className="form-control-custom"
                     value={job.salary}
                     onChange={(e) => setJob({...job, salary: e.target.value})}
-                    placeholder="$80,000 - $120,000"
                   />
                 </div>
                 <div className="form-group-custom">
@@ -156,7 +154,6 @@ const JobForm = ({ onJobCreated, onClose }) => {
                     className="form-control-custom"
                     value={job.postedBy}
                     onChange={(e) => setJob({...job, postedBy: e.target.value})}
-                    placeholder="Your Name, Title"
                     required
                   />
                 </div>
