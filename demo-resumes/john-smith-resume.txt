@@ -1,0 +1,16 @@
+John Smith
+Full Stack Developer
+
+Contact: john.smith@email.com | 555-0123
+
+EXPERIENCE:
+4 years full-stack development, built 10+ web applications
+
+EDUCATION:
+BS Computer Science, State University
+
+SKILLS:
+React, Node.js, JavaScript, MongoDB, Express.js, REST APIs, Git
+
+SUMMARY:
+Experienced Full Stack Developer with 4 years building modern web applications using React, Node.js, and MongoDB. Proficient in JavaScript, Express.js, REST APIs, and Git. Built scalable applications serving 10,000+ users.

@@ -1,0 +1,16 @@
+Emily Davis
+Data Scientist
+
+Contact: emily.davis@email.com | 555-0456
+
+EXPERIENCE:
+3 years data analysis, ML model development
+
+EDUCATION:
+MS Data Science, Tech University
+
+SKILLS:
+Python, pandas, scikit-learn, SQL, machine learning, statistics
+
+SUMMARY:
+Data Scientist with 3 years experience in machine learning and statistical analysis. Expert in Python, pandas, scikit-learn, and SQL. Developed predictive models improving business metrics by 25%. Strong background in statistics and data visualization.

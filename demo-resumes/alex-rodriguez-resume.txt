@@ -1,0 +1,16 @@
+Alex Rodriguez
+Frontend Developer
+
+Contact: alex.rodriguez@email.com | 555-0789
+
+EXPERIENCE:
+2 years frontend development, responsive design
+
+EDUCATION:
+BS Web Design, Design College
+
+SKILLS:
+React, JavaScript, HTML5, CSS3, Bootstrap, UI/UX
+
+SUMMARY:
+Frontend Developer specializing in React and responsive web design. 2 years experience creating user-friendly interfaces with HTML5, CSS3, Bootstrap, and modern JavaScript. Strong eye for UI/UX design principles and cross-browser compatibility.
