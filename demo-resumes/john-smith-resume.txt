@@ -1,6 +1,7 @@
 John Smith
 Full Stack Developer
 
+
 Contact: john.smith@email.com | 9858500311
 
 EXPERIENCE:
