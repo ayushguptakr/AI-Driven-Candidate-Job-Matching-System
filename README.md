@@ -1,3 +1,4 @@
+# TalentMatch AI
 # AI-Driven Candidate-Job Matching System
 
 An intelligent job matching platform that uses Claude AI to analyze resumes and match candidates with job postings based on skills, experience, and requirements.

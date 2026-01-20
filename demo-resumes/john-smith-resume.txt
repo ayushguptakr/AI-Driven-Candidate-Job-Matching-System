@@ -1,7 +1,7 @@
 John Smith
 Full Stack Developer
 
-Contact: john.smith@email.com | 555-0123
+Contact: john.smith@email.com | 9858500311
 
 EXPERIENCE:
 4 years full-stack development, built 10+ web applications

@@ -6,7 +6,7 @@ const sampleJobs = [
     description: "Build scalable web applications using modern technologies. Work with React, Node.js, and cloud services.",
     requirements: "3+ years experience with React, Node.js, MongoDB, REST APIs, Git version control",
     location: "Remote",
-    salary: "$80,000 - $120,000",
+    salary: "Rs. 80,000 - 120,000",
     postedBy: "Sarah Johnson, HR Manager"
   },
   {
@@ -15,7 +15,7 @@ const sampleJobs = [
     description: "Analyze large datasets and build machine learning models to drive business insights.",
     requirements: "Python, pandas, scikit-learn, SQL, statistics, machine learning algorithms",
     location: "New York, NY",
-    salary: "$90,000 - $140,000",
+    salary: "Rs. 90,000 - $140,000",
     postedBy: "Mike Chen, Data Team Lead"
   },
   {
@@ -24,7 +24,7 @@ const sampleJobs = [
     description: "Create beautiful, responsive user interfaces using React and modern CSS frameworks.",
     requirements: "React, JavaScript, HTML5, CSS3, Bootstrap, responsive design, UI/UX principles",
     location: "San Francisco, CA",
-    salary: "$70,000 - $110,000",
+    salary: "Rs. 70,000 - $110,000",
     postedBy: "Lisa Park, Creative Director"
   }
 ];
