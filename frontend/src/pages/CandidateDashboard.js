@@ -5,6 +5,8 @@ import { resumeAPI, jobAPI } from '../services/api';
 const CandidateDashboard = () => {
   const [resumes, setResumes] = useState([]);
   const [jobs, setJobs] = useState([]);
+  const [isUploadResumeOpen, setIsUploadResumeOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const loadData = async () => {
     try {
@@ -19,6 +21,13 @@ const CandidateDashboard = () => {
     }
   };
 
+  const handleResumeUploaded = () => {
+    loadData();
+    setIsUploadResumeOpen(false);
+    setSuccessMessage('Resume uploaded successfully! ✅');
+    setTimeout(() => setSuccessMessage(''), 3000);
+  };
+
   useEffect(() => {
     loadData();
   }, []);
@@ -27,18 +36,41 @@ const CandidateDashboard = () => {
     <div style={{ backgroundColor: 'var(--bg-secondary)', minHeight: '100vh', paddingTop: 'var(--spacing-lg)' }}>
       <div className="main-container">
         <div className="mb-xl">
-          <h1 className="page-title">
-            <span className="icon-lg" style={{ marginRight: 'var(--spacing-sm)' }}>👨💼</span>
-            Candidate Dashboard
-          </h1>
-          <p className="page-subtitle">Upload your resume and discover matching job opportunities</p>
+          <div className="flex items-center justify-between mb-md">
+            <div>
+              <h1 className="page-title">
+                <span className="icon-lg" style={{ marginRight: 'var(--spacing-sm)' }}>👨💼</span>
+                Candidate Dashboard
+              </h1>
+              <p className="page-subtitle">Upload your resume and discover matching job opportunities</p>
+            </div>
+            <button 
+              className="btn-primary-custom"
+              onClick={() => setIsUploadResumeOpen(true)}
+              style={{ height: '48px', fontSize: '14px', fontWeight: '600' }}
+            >
+              📄 Upload New Resume
+            </button>
+          </div>
+          
+          {successMessage && (
+            <div style={{
+              padding: '12px 16px',
+              borderRadius: 'var(--radius)',
+              marginBottom: '20px',
+              backgroundColor: '#f0fdf4',
+              color: 'var(--success-color)',
+              border: '1px solid #bbf7d0'
+            }}>
+              {successMessage}
+            </div>
+          )}
         </div>
         
         <div className="grid-2 gap-lg">
           <div>
-            <ResumeUpload onResumeUploaded={loadData} />
             
-            <div className="card-custom" style={{ marginTop: 'var(--spacing-lg)' }}>
+            <div className="card-custom">
               <div className="card-header-custom flex items-center justify-between">
                 <h3 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>
                   <span className="icon-md" style={{ marginRight: 'var(--spacing-xs)' }}>📄</span>
@@ -159,6 +191,13 @@ const CandidateDashboard = () => {
             </div>
           </div>
         </div>
+        
+        {isUploadResumeOpen && (
+          <ResumeUpload 
+            onResumeUploaded={handleResumeUploaded}
+            onClose={() => setIsUploadResumeOpen(false)}
+          />
+        )}
       </div>
     </div>
   );
