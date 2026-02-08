@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = '/api';
+const API_BASE = 'https://ai-driven-candidate-job-matching-system.onrender.com/api';
 
 export const jobAPI = {
   getAll: () => axios.get(`${API_BASE}/jobs`),
