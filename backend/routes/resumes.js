@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
 const Resume = require('../models/Resume');
+const { auth, checkRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -29,8 +30,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Upload resume
-router.post('/upload', upload.single('resume'), async (req, res) => {
+// Upload resume (Candidate only)
+router.post('/upload', auth, checkRole('candidate'), upload.single('resume'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });

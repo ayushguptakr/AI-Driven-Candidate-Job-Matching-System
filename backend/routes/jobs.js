@@ -3,6 +3,7 @@ const Job = require('../models/Job');
 const Resume = require('../models/Resume');
 const Match = require('../models/Match');
 const { analyzeMatch } = require('../services/claudeService');
+const { auth, checkRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -16,8 +17,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Create new job
-router.post('/', async (req, res) => {
+// Create new job (Recruiter only)
+router.post('/', auth, checkRole('recruiter'), async (req, res) => {
   try {
     const job = new Job(req.body);
     await job.save();
@@ -27,8 +28,8 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Get matches for a job
-router.get('/:jobId/matches', async (req, res) => {
+// Get matches for a job (Recruiter only)
+router.get('/:jobId/matches', auth, checkRole('recruiter'), async (req, res) => {
   try {
     const matches = await Match.find({ jobId: req.params.jobId })
       .populate('resumeId')
@@ -39,8 +40,8 @@ router.get('/:jobId/matches', async (req, res) => {
   }
 });
 
-// Match job with all resumes
-router.post('/:jobId/match', async (req, res) => {
+// Match job with all resumes (Recruiter only)
+router.post('/:jobId/match', auth, checkRole('recruiter'), async (req, res) => {
   try {
     const job = await Job.findById(req.params.jobId);
     const resumes = await Resume.find();
