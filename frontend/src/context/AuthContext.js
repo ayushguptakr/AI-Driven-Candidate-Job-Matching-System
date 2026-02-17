@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get('https://ai-driven-candidate-job-matching-system.onrender.com/api/auth/me');
+      const response = await axios.get('http://localhost:5000/api/auth/me');
       setUser(response.data);
     } catch (error) {
       localStorage.removeItem('token');
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const response = await axios.post('https://ai-driven-candidate-job-matching-system.onrender.com/api/auth/login', { email, password });
+    const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
     localStorage.setItem('token', response.data.token);
     axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
     setUser(response.data.user);
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (email, password, name, role) => {
-    const response = await axios.post('https://ai-driven-candidate-job-matching-system.onrender.com/api/auth/register', { email, password, name, role });
+    const response = await axios.post('http://localhost:5000/api/auth/register', { email, password, name, role });
     localStorage.setItem('token', response.data.token);
     axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
     setUser(response.data.user);
