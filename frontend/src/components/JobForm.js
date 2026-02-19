@@ -3,7 +3,7 @@ import { jobAPI } from '../services/api';
 
 const JobForm = ({ onJobCreated, onClose }) => {
   const [job, setJob] = useState({
-    title: '', company: '', description: '', requirements: '', location: '', salary: '', postedBy: ''
+    title: '', company: '', description: '', requirements: '', eligibility: '', location: '', salary: '', postedBy: ''
   });
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ const JobForm = ({ onJobCreated, onClose }) => {
     setLoading(true);
     try {
       await jobAPI.create(job);
-      setJob({ title: '', company: '', description: '', requirements: '', location: '', salary: '', postedBy: '' });
+      setJob({ title: '', company: '', description: '', requirements: '', eligibility: '', location: '', salary: '', postedBy: '' });
       onJobCreated?.();
       onClose?.();
     } catch (error) {
@@ -127,6 +127,17 @@ const JobForm = ({ onJobCreated, onClose }) => {
                   onChange={(e) => setJob({...job, requirements: e.target.value})}
                   placeholder="List required skills, experience, qualifications..."
                   required
+                />
+              </div>
+
+              <div className="form-group-custom">
+                <label className="form-label">Eligibility Criteria</label>
+                <textarea
+                  className="form-control-custom"
+                  style={{ height: '92px', resize: 'vertical', paddingTop: '12px', paddingBottom: '12px' }}
+                  value={job.eligibility}
+                  onChange={(e) => setJob({...job, eligibility: e.target.value})}
+                  placeholder="Eligibility requirements (e.g., years of experience, education level, certifications...)"
                 />
               </div>
               

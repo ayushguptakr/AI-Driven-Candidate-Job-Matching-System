@@ -8,11 +8,31 @@ const RecruiterDashboard = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [isPostJobOpen, setIsPostJobOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [stats, setStats] = useState({
+    totalJobs: 0,
+    totalMatches: 0,
+    avgMatchScore: 0,
+    activeJobs: 0
+  });
 
   const loadJobs = async () => {
     try {
       const response = await jobAPI.getAll();
       setJobs(response.data);
+      
+      // Calculate statistics
+      const totalMatches = response.data.reduce((sum, job) => sum + (job.matchCount || 0), 0);
+      const avgScore = response.data.length > 0 
+        ? response.data.reduce((sum, job) => sum + (job.avgMatchScore || 0), 0) / response.data.length 
+        : 0;
+      
+      setStats({
+        totalJobs: response.data.length,
+        totalMatches: totalMatches,
+        avgMatchScore: Math.round(avgScore),
+        activeJobs: response.data.filter(job => new Date(job.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length
+      });
     } catch (error) {
       console.error('Error loading jobs:', error);
     }
@@ -56,12 +76,70 @@ const RecruiterDashboard = () => {
               borderRadius: 'var(--radius)',
               marginBottom: '20px',
               backgroundColor: '#f0fdf4',
-              color: 'var(--success-color)',
-              border: '1px solid #bbf7d0'
+              color: 'var(--success)',
+              border: '1px solid #bbf7d0',
+              fontFamily: 'DM Sans, sans-serif'
             }}>
               {successMessage}
             </div>
           )}
+
+          {/* Statistics Cards */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: 'var(--spacing-md)',
+            marginBottom: 'var(--spacing-lg)'
+          }}>
+            <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>💼</div>
+              <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
+                {stats.totalJobs}
+              </div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif' }}>
+                Total Jobs Posted
+              </div>
+            </div>
+            <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🎯</div>
+              <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--accent)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
+                {stats.totalMatches}
+              </div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif' }}>
+                Total Matches
+              </div>
+            </div>
+            <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>⭐</div>
+              <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--success)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
+                {stats.avgMatchScore}%
+              </div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif' }}>
+                Avg Match Score
+              </div>
+            </div>
+            <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🔥</div>
+              <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--warning)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
+                {stats.activeJobs}
+              </div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif' }}>
+                Active (30 days)
+              </div>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div style={{ marginBottom: 'var(--spacing-md)' }}>
+            <input
+              type="text"
+              placeholder="🔍 Search jobs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="form-control-custom"
+              style={{ maxWidth: '400px' }}
+            />
+          </div>
         </div>
         
         <div className="grid-dashboard">
@@ -82,7 +160,14 @@ const RecruiterDashboard = () => {
                     <p>Click "Post New Job" to get started</p>
                   </div>
                 ) : (
-                  jobs.map((job) => (
+                  jobs
+                    .filter(job => 
+                      searchQuery === '' || 
+                      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      job.location.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    .map((job) => (
                     <div
                       key={job._id}
                       className={`list-item ${selectedJob?._id === job._id ? 'active' : ''}`}
