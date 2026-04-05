@@ -185,7 +185,7 @@ const RecruiterDashboard = () => {
                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><MapPin size={14} color="#9CA3AF" /> {job.location}</span>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--success-color)' }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><DollarSign size={14} color="#9CA3AF" /> {job.salary}</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><RupeeSign size={14} color="#9CA3AF" /> {job.salary}</span>
                         </div>
                       </div>
                     </div>
