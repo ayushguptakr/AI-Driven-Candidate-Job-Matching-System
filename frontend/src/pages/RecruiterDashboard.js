@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import JobForm from '../components/JobForm';
 import MatchResults from '../components/MatchResults';
 import { jobAPI } from '../services/api';
+import DashboardShell from '../components/DashboardShell';
+import { BrainCircuit, BriefcaseBusiness, Building2, Calendar, DollarSign, FilePlus2, MapPin, Settings2, Users } from 'lucide-react';
 
 const RecruiterDashboard = () => {
   const [jobs, setJobs] = useState([]);
@@ -40,7 +42,7 @@ const RecruiterDashboard = () => {
 
   const handleJobCreated = () => {
     loadJobs();
-    setSuccessMessage('Job posted successfully! 🎉');
+    setSuccessMessage('Job posted successfully.');
     setTimeout(() => setSuccessMessage(''), 3000);
   };
 
@@ -49,26 +51,30 @@ const RecruiterDashboard = () => {
   }, []);
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-secondary)', minHeight: '100vh', paddingTop: 'var(--spacing-lg)' }}>
-      <div className="main-container">
-        <div className="mb-xl">
-          <div className="flex items-center justify-between mb-sm">
-            <div>
-              <h1 className="page-title">
-                <span className="icon-lg" style={{ marginRight: 'var(--spacing-sm)' }}>👔</span>
-                Recruiter Dashboard
-              </h1>
-              <p className="page-subtitle">Post jobs and find the perfect candidates with AI-powered matching</p>
-            </div>
-            <button 
-              onClick={() => setIsPostJobOpen(true)}
-              className="btn-primary-custom"
-              style={{ height: '48px', fontSize: '16px', fontWeight: '600' }}
-            >
-              <span style={{ marginRight: '8px' }}>+</span>
-              Post New Job
-            </button>
-          </div>
+    <div style={{ paddingTop: 'var(--spacing-lg)' }}>
+      <DashboardShell
+        title="Recruiter Dashboard"
+        subtitle="Post roles, review candidates, and prioritize matches with AI."
+        actions={
+          <button
+            onClick={() => setIsPostJobOpen(true)}
+            className="btn-primary-custom"
+            style={{ height: '48px', fontSize: '14px', fontWeight: '700' }}
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+              <FilePlus2 size={16} />
+              Post Job
+            </span>
+          </button>
+        }
+        navItems={[
+          { to: '/recruiter/dashboard', label: 'Dashboard', icon: <BriefcaseBusiness size={18} /> },
+          { to: '/recruiter/dashboard', label: 'Post Job', icon: <FilePlus2 size={18} /> },
+          { to: '/recruiter/dashboard', label: 'Candidates', icon: <Users size={18} /> },
+          { to: '/recruiter/dashboard', label: 'AI Matches', icon: <BrainCircuit size={18} /> },
+          { to: '/profile', label: 'Settings', icon: <Settings2 size={18} /> }
+        ]}
+      >
           
           {successMessage && (
             <div style={{
@@ -85,69 +91,55 @@ const RecruiterDashboard = () => {
           )}
 
           {/* Statistics Cards */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 'var(--spacing-md)',
-            marginBottom: 'var(--spacing-lg)'
-          }}>
-            <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>💼</div>
-              <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
-                {stats.totalJobs}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 24 }}>
+            {[
+              { label: 'Total Jobs Posted', value: stats.totalJobs, color: 'var(--primary)', icon: <BriefcaseBusiness size={16} /> },
+              { label: 'Candidates Applied', value: stats.totalMatches, color: 'var(--accent)', icon: <Users size={16} /> },
+              { label: 'Top Matches', value: `${stats.avgMatchScore}%`, color: 'var(--success)', icon: <BrainCircuit size={16} /> },
+              { label: 'Active (30 days)', value: stats.activeJobs, color: 'var(--warning)', icon: <Calendar size={16} /> }
+            ].map((s) => (
+              <div key={s.label} className="stat-card">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div style={{ fontSize: 12, color: '#9CA3AF', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                      {s.label}
+                    </div>
+                    <div className="stat-number" style={{ color: s.color }}>{s.value}</div>
+                  </div>
+                  <div style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: 999,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#F3F4F6',
+                    border: '1px solid #E5E7EB',
+                    color: '#6B7280'
+                  }}>
+                    {s.icon}
+                  </div>
+                </div>
               </div>
-              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif' }}>
-                Total Jobs Posted
-              </div>
-            </div>
-            <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🎯</div>
-              <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--accent)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
-                {stats.totalMatches}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif' }}>
-                Total Matches
-              </div>
-            </div>
-            <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>⭐</div>
-              <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--success)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
-                {stats.avgMatchScore}%
-              </div>
-              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif' }}>
-                Avg Match Score
-              </div>
-            </div>
-            <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🔥</div>
-              <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--warning)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
-                {stats.activeJobs}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif' }}>
-                Active (30 days)
-              </div>
-            </div>
+            ))}
           </div>
 
           {/* Search Bar */}
           <div style={{ marginBottom: 'var(--spacing-md)' }}>
             <input
               type="text"
-              placeholder="🔍 Search jobs..."
+              placeholder="Search jobs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="form-control-custom"
               style={{ maxWidth: '400px' }}
             />
           </div>
-        </div>
-        
         <div className="grid-dashboard">
           <div>
             <div className="card-custom">
               <div className="card-header-custom flex items-center justify-between">
                 <h3 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>
-                  <span className="icon-md" style={{ marginRight: 'var(--spacing-xs)' }}>💼</span>
                   Posted Jobs
                 </h3>
                 <span className="badge-custom badge-primary">{jobs.length}</span>
@@ -155,7 +147,9 @@ const RecruiterDashboard = () => {
               <div className="content-section">
                 {jobs.length === 0 ? (
                   <div className="empty-state">
-                    <div className="empty-icon">💼</div>
+                    <div className="empty-icon" aria-hidden="true">
+                      <BriefcaseBusiness size={44} color="var(--text-muted)" />
+                    </div>
                     <h4 style={{ color: 'var(--text-primary)' }}>No jobs posted yet</h4>
                     <p>Click "Post New Job" to get started</p>
                   </div>
@@ -186,10 +180,12 @@ const RecruiterDashboard = () => {
                           </span>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-                          <span className="icon-sm">🏢</span> {job.company} • <span className="icon-sm">📍</span> {job.location}
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Building2 size={14} color="#9CA3AF" /> {job.company}</span>
+                          <span style={{ opacity: 0.35, margin: '0 8px' }}>•</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><MapPin size={14} color="#9CA3AF" /> {job.location}</span>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--success-color)' }}>
-                          {job.salary}
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><DollarSign size={14} color="#9CA3AF" /> {job.salary}</span>
                         </div>
                       </div>
                     </div>
@@ -215,9 +211,11 @@ const RecruiterDashboard = () => {
                           {selectedJob.title}
                         </h2>
                         <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--spacing-sm)', fontSize: '0.875rem' }}>
-                          <span className="icon-sm">🏢</span> {selectedJob.company} • 
-                          <span className="icon-sm">📍</span> {selectedJob.location} • 
-                          <span className="icon-sm">💰</span> {selectedJob.salary}
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Building2 size={14} color="#9CA3AF" /> {selectedJob.company}</span>
+                          <span style={{ opacity: 0.35, margin: '0 8px' }}>•</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><MapPin size={14} color="#9CA3AF" /> {selectedJob.location}</span>
+                          <span style={{ opacity: 0.35, margin: '0 8px' }}>•</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><DollarSign size={14} color="#9CA3AF" /> {selectedJob.salary}</span>
                         </p>
                       </div>
                       <div style={{ textAlign: 'right' }}>
@@ -244,7 +242,9 @@ const RecruiterDashboard = () => {
             ) : (
               <div className="card-custom">
                 <div className="card-body-custom text-center" style={{ padding: 'var(--spacing-xl)' }}>
-                  <div className="empty-icon">🎯</div>
+                  <div className="empty-icon" aria-hidden="true">
+                    <BrainCircuit size={44} color="var(--text-muted)" />
+                  </div>
                   <h3 style={{ marginBottom: 'var(--spacing-sm)', color: 'var(--text-primary)' }}>Select a job to view matches</h3>
                   <p style={{ color: 'var(--text-secondary)' }}>
                     Click on a job from the list to see AI-powered candidate matches and detailed analytics.
@@ -254,7 +254,7 @@ const RecruiterDashboard = () => {
             )}
           </div>
         </div>
-      </div>
+      </DashboardShell>
       
       {/* Job Form Modal */}
       {isPostJobOpen && (

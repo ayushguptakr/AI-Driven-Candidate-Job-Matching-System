@@ -17,7 +17,8 @@ const Profile = () => {
     phone: '',
     bio: '',
     location: '',
-    company: ''
+    company: '',
+    role: 'candidate'
   });
 
   // Password form state
@@ -35,7 +36,8 @@ const Profile = () => {
         phone: user.phone || '',
         bio: user.bio || '',
         location: user.location || '',
-        company: user.company || ''
+        company: user.company || '',
+        role: user.role || 'candidate'
       });
     }
   }, [user]);
@@ -49,7 +51,10 @@ const Profile = () => {
     try {
       await updateProfile(profileData);
       await refreshUser();
-      setSuccessMessage('Profile updated successfully! ✅');
+      setSuccessMessage('Profile updated successfully.');
+      localStorage.setItem('selectedRole', profileData.role);
+      // Optionally redirect to the appropriate dashboard after role change
+      // navigate(profileData.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       setErrorMessage(error.message);
@@ -78,7 +83,7 @@ const Profile = () => {
 
     try {
       await changePassword(passwordData.currentPassword, passwordData.newPassword);
-      setSuccessMessage('Password changed successfully! ✅');
+      setSuccessMessage('Password changed successfully.');
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
@@ -97,7 +102,7 @@ const Profile = () => {
     <div style={{ backgroundColor: 'var(--bg-secondary)', minHeight: '100vh', paddingTop: 'var(--spacing-lg)', paddingBottom: 'var(--spacing-xl)' }}>
       <div className="main-container">
         <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-          <h1 className="page-title">👤 Profile Settings</h1>
+          <h1 className="page-title">Profile Settings</h1>
           <p className="page-subtitle">Manage your account settings and preferences</p>
         </div>
 
@@ -227,7 +232,7 @@ const Profile = () => {
                   </div>
                 </div>
 
-                {user.role === 'recruiter' && (
+                {profileData.role === 'recruiter' && (
                   <div className="form-group-custom" style={{ marginBottom: 'var(--spacing-md)' }}>
                     <label className="form-label">Company</label>
                     <input
@@ -252,13 +257,25 @@ const Profile = () => {
                   />
                 </div>
 
+                <div className="form-group-custom" style={{ marginBottom: 'var(--spacing-md)' }}>
+                  <label className="form-label">Role</label>
+                  <select
+                    className="form-control-custom"
+                    value={profileData.role}
+                    onChange={(e) => setProfileData({ ...profileData, role: e.target.value })}
+                  >
+                    <option value="recruiter">Recruiter (I’m hiring)</option>
+                    <option value="candidate">Candidate (I’m looking for work)</option>
+                  </select>
+                </div>
+
                 <button
                   type="submit"
                   className="btn-primary-custom"
                   disabled={loading}
                   style={{ minWidth: '150px' }}
                 >
-                  {loading ? '⏳ Saving...' : '💾 Save Changes'}
+                  {loading ? 'Saving…' : 'Save Changes'}
                 </button>
               </form>
             </div>
@@ -315,7 +332,7 @@ const Profile = () => {
                   disabled={loading}
                   style={{ minWidth: '150px' }}
                 >
-                  {loading ? '⏳ Changing...' : '🔒 Change Password'}
+                  {loading ? 'Changing…' : 'Change Password'}
                 </button>
               </form>
             </div>

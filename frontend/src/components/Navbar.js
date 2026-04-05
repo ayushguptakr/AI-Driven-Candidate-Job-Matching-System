@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Bell, LayoutDashboard, LogOut, Settings2, Sparkles } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -51,7 +52,14 @@ const Navbar = () => {
             letterSpacing: '-0.02em',
             textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
             transition: 'var(--transition-fast)'
-          }}>🤖 TalentMatch AI</h1>
+          }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ display: 'inline-flex', width: 30, height: 30, borderRadius: 10, alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.18)' }}>
+                <Sparkles size={16} />
+              </span>
+              TalentMatch AI
+            </span>
+          </h1>
         </Link>
 
         <div className="flex gap-md items-center">
@@ -59,7 +67,7 @@ const Navbar = () => {
             <>
               {/* Dashboard Link */}
               <Link 
-                to={user.role === 'recruiter' ? '/recruiter' : '/candidate'} 
+                to={user.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard'} 
                 style={{
                   color: '#F8FAFC',
                   textDecoration: 'none',
@@ -111,7 +119,7 @@ const Navbar = () => {
                     e.target.style.background = 'rgba(255, 255, 255, 0.1)';
                   }}
                 >
-                  🔔
+                  <Bell size={18} />
                   {unreadCount > 0 && (
                     <span style={{
                       position: 'absolute',
@@ -162,7 +170,9 @@ const Navbar = () => {
                     <div>
                       {notifications.length === 0 ? (
                         <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                          <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🔕</div>
+                          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+                            <Bell size={22} color="var(--text-muted)" />
+                          </div>
                           <p style={{ margin: 0 }}>No notifications</p>
                         </div>
                       ) : (
@@ -173,14 +183,14 @@ const Navbar = () => {
                               padding: '16px',
                               borderBottom: '1px solid var(--border-light)',
                               cursor: 'pointer',
-                              background: !notif.read ? 'rgba(13, 148, 136, 0.05)' : 'transparent',
+                              background: !notif.read ? 'rgba(79, 70, 229, 0.05)' : 'transparent',
                               transition: 'var(--transition-fast)'
                             }}
                             onMouseEnter={(e) => {
-                              e.target.style.background = 'rgba(13, 148, 136, 0.1)';
+                              e.target.style.background = 'rgba(79, 70, 229, 0.1)';
                             }}
                             onMouseLeave={(e) => {
-                              e.target.style.background = !notif.read ? 'rgba(13, 148, 136, 0.05)' : 'transparent';
+                              e.target.style.background = !notif.read ? 'rgba(79, 70, 229, 0.05)' : 'transparent';
                             }}
                           >
                             <div style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '4px' }}>
@@ -248,7 +258,7 @@ const Navbar = () => {
                     <div style={{
                       padding: '16px',
                       borderBottom: '1px solid var(--border-light)',
-                      background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.05) 0%, rgba(255, 107, 107, 0.02) 100%)'
+                      background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.05) 0%, rgba(168, 85, 247, 0.03) 100%)'
                     }}>
                       <div style={{ fontWeight: '600', fontFamily: 'DM Sans, sans-serif', marginBottom: '4px' }}>
                         {user.name}
@@ -258,7 +268,7 @@ const Navbar = () => {
                       </div>
                       <div style={{ marginTop: '8px' }}>
                         <span className="badge-custom badge-primary" style={{ fontSize: '0.625rem' }}>
-                          {user.role === 'recruiter' ? '👔 Recruiter' : '👨💼 Candidate'}
+                          {user.role === 'recruiter' ? 'Recruiter' : 'Candidate'}
                         </span>
                       </div>
                     </div>
@@ -275,17 +285,20 @@ const Navbar = () => {
                           fontSize: '0.875rem'
                         }}
                         onMouseEnter={(e) => {
-                          e.target.style.background = 'rgba(13, 148, 136, 0.05)';
+                          e.target.style.background = 'rgba(79, 70, 229, 0.05)';
                         }}
                         onMouseLeave={(e) => {
                           e.target.style.background = 'transparent';
                         }}
                         onClick={() => setShowProfileMenu(false)}
                       >
-                        👤 Profile Settings
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                          <Settings2 size={16} />
+                          Profile Settings
+                        </span>
                       </Link>
                       <Link
-                        to={user.role === 'recruiter' ? '/recruiter' : '/candidate'}
+                        to={user.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard'}
                         style={{
                           display: 'block',
                           padding: '12px 16px',
@@ -296,14 +309,17 @@ const Navbar = () => {
                           fontSize: '0.875rem'
                         }}
                         onMouseEnter={(e) => {
-                          e.target.style.background = 'rgba(13, 148, 136, 0.05)';
+                          e.target.style.background = 'rgba(79, 70, 229, 0.05)';
                         }}
                         onMouseLeave={(e) => {
                           e.target.style.background = 'transparent';
                         }}
                         onClick={() => setShowProfileMenu(false)}
                       >
-                        📊 Dashboard
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                          <LayoutDashboard size={16} />
+                          Dashboard
+                        </span>
                       </Link>
                       <div
                         style={{
@@ -324,7 +340,10 @@ const Navbar = () => {
                         }}
                         onClick={handleLogout}
                       >
-                        🚪 Logout
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                          <LogOut size={16} />
+                          Logout
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -343,7 +362,7 @@ const Navbar = () => {
                 transition: 'var(--transition-fast)'
               }}
               onMouseEnter={(e) => {
-                e.target.style.color = '#14B8A6';
+                e.target.style.color = 'rgba(199, 210, 254, 1)';
                 e.target.style.transform = 'translateY(-1px)';
               }}
               onMouseLeave={(e) => {

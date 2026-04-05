@@ -21,23 +21,32 @@ function App() {
           <main style={{ flex: 1 }}>
             <Routes>
               <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/recruiter" element={
-            <ProtectedRoute allowedRoles={['recruiter']}>
-              <RecruiterDashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/candidate" element={
-            <ProtectedRoute allowedRoles={['candidate']}>
-              <CandidateDashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route
+                path="/recruiter/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={['recruiter']}>
+                    <RecruiterDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/candidate/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={['candidate']}>
+                    <CandidateDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </main>
           <Footer />

@@ -1,6 +1,19 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import {
+  ArrowRight,
+  BadgeCheck,
+  Bot,
+  BrainCircuit,
+  BriefcaseBusiness,
+  ChartNoAxesCombined,
+  CheckCircle2,
+  Clock,
+  FileUp,
+  Sparkles,
+  Zap
+} from 'lucide-react';
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -37,12 +50,8 @@ const HomePage = () => {
             marginBottom: 'var(--spacing-2xl)',
             animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
           }}>
-            <div style={{
-              fontSize: '4rem',
-              marginBottom: 'var(--spacing-md)',
-              animation: 'scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both'
-            }}>
-              👋
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 68, height: 68, borderRadius: 20, background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(168, 85, 247, 0.10))', border: '1px solid rgba(99, 102, 241, 0.18)', boxShadow: 'var(--shadow-sm)', marginBottom: 'var(--spacing-md)', animation: 'scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both' }}>
+              <Sparkles size={26} color="var(--primary)" />
             </div>
             <h1 className="page-title" style={{
               fontSize: 'clamp(2rem, 6vw, 3.5rem)',
@@ -82,7 +91,7 @@ const HomePage = () => {
               transition: 'var(--transition)',
               animation: 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both'
             }}
-            onClick={() => navigate(user.role === 'recruiter' ? '/recruiter' : '/candidate')}
+            onClick={() => navigate(user.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard')}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-8px)';
               e.currentTarget.style.boxShadow = 'var(--shadow-xl)';
@@ -91,8 +100,8 @@ const HomePage = () => {
               e.currentTarget.style.transform = 'translateY(0)';
               e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
             }}>
-              <div style={{ fontSize: '3rem', marginBottom: 'var(--spacing-md)' }}>
-                {user.role === 'recruiter' ? '👔' : '👨💼'}
+              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: 20, background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(168, 85, 247, 0.10))', border: '1px solid rgba(99, 102, 241, 0.18)', marginBottom: 'var(--spacing-md)' }}>
+                {user.role === 'recruiter' ? <BriefcaseBusiness size={26} color="var(--primary)" /> : <FileUp size={26} color="var(--primary)" />}
               </div>
               <h3 style={{
                 fontFamily: 'Fraunces, serif',
@@ -113,7 +122,7 @@ const HomePage = () => {
                 }
               </p>
               <div className="btn-primary-custom" style={{ width: '100%' }}>
-                Open Dashboard →
+                Open Dashboard <ArrowRight size={16} />
               </div>
             </div>
 
@@ -133,7 +142,9 @@ const HomePage = () => {
               e.currentTarget.style.transform = 'translateY(0)';
               e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
             }}>
-              <div style={{ fontSize: '3rem', marginBottom: 'var(--spacing-md)' }}>👤</div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: 20, background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(168, 85, 247, 0.10))', border: '1px solid rgba(99, 102, 241, 0.18)', marginBottom: 'var(--spacing-md)' }}>
+                <BadgeCheck size={26} color="var(--primary)" />
+              </div>
               <h3 style={{
                 fontFamily: 'Fraunces, serif',
                 fontSize: '1.5rem',
@@ -158,7 +169,7 @@ const HomePage = () => {
                 fontFamily: 'DM Sans, sans-serif',
                 transition: 'var(--transition-fast)'
               }}>
-                Manage Profile →
+                Manage Profile <ArrowRight size={16} style={{ verticalAlign: 'middle' }} />
               </div>
             </div>
           </div>
@@ -173,13 +184,14 @@ const HomePage = () => {
             <div style={{
               textAlign: 'center',
               padding: 'var(--spacing-lg)',
-              background: 'rgba(13, 148, 136, 0.05)',
+              background: 'rgba(79, 70, 229, 0.06)',
               borderRadius: 'var(--radius-lg)',
-              border: '1px solid rgba(13, 148, 136, 0.1)'
+              border: '1px solid rgba(79, 70, 229, 0.12)'
             }}>
-              <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--primary)', fontFamily: 'Fraunces, serif' }}>
-                AI
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+                <BrainCircuit size={22} color="var(--primary)" />
               </div>
+              <div style={{ fontSize: '1.125rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: 'Fraunces, serif' }}>AI-powered</div>
               <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif', marginTop: '4px' }}>
                 Powered Matching
               </div>
@@ -187,13 +199,14 @@ const HomePage = () => {
             <div style={{
               textAlign: 'center',
               padding: 'var(--spacing-lg)',
-              background: 'rgba(255, 107, 107, 0.05)',
+              background: 'rgba(168, 85, 247, 0.06)',
               borderRadius: 'var(--radius-lg)',
-              border: '1px solid rgba(255, 107, 107, 0.1)'
+              border: '1px solid rgba(168, 85, 247, 0.12)'
             }}>
-              <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--accent)', fontFamily: 'Fraunces, serif' }}>
-                ⚡
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+                <Zap size={22} color="var(--accent)" />
               </div>
+              <div style={{ fontSize: '1.125rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: 'Fraunces, serif' }}>Fast</div>
               <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif', marginTop: '4px' }}>
                 Fast Results
               </div>
@@ -205,9 +218,10 @@ const HomePage = () => {
               borderRadius: 'var(--radius-lg)',
               border: '1px solid rgba(16, 185, 129, 0.1)'
             }}>
-              <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--success)', fontFamily: 'Fraunces, serif' }}>
-                🎯
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+                <CheckCircle2 size={22} color="var(--success)" />
               </div>
+              <div style={{ fontSize: '1.125rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: 'Fraunces, serif' }}>Accurate</div>
               <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif', marginTop: '4px' }}>
                 Accurate Matches
               </div>
@@ -218,23 +232,10 @@ const HomePage = () => {
     );
   }
 
-  // Non-logged-in users see the engaging landing page
+  // Non-logged-in users see the premium landing page
   return (
-    <div style={{
-      position: 'relative',
-      minHeight: '100vh',
-      overflow: 'hidden'
-    }}>
-      {/* Hero Section */}
-      <section style={{
-        position: 'relative',
-        padding: '120px 0 80px',
-        minHeight: '90vh',
-        display: 'flex',
-        alignItems: 'center',
-        overflow: 'hidden'
-      }}>
-        {/* Animated Background */}
+    <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
+      <section style={{ position: 'relative', padding: '110px 0 72px', overflow: 'hidden' }}>
         <div style={{
           position: 'absolute',
           top: 0,
@@ -242,15 +243,13 @@ const HomePage = () => {
           right: 0,
           bottom: 0,
           background: `
-            radial-gradient(circle at 15% 20%, rgba(13, 148, 136, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 85% 60%, rgba(255, 107, 107, 0.12) 0%, transparent 50%),
-            radial-gradient(circle at 50% 80%, rgba(20, 184, 166, 0.08) 0%, transparent 50%),
-            linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%)
+            radial-gradient(circle at 15% 20%, rgba(79, 70, 229, 0.24) 0%, transparent 55%),
+            radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.18) 0%, transparent 55%),
+            linear-gradient(135deg, #0B1020 0%, #0F172A 55%, #111827 100%)
           `,
           zIndex: 0
         }} />
-        
-        {/* Animated geometric pattern */}
+
         <div style={{
           position: 'absolute',
           top: 0,
@@ -266,162 +265,242 @@ const HomePage = () => {
               rgba(255, 255, 255, 0.02) 20px
             )
           `,
-          opacity: 0.4,
-          zIndex: 1,
-          animation: 'shimmer 8s linear infinite'
+          opacity: 0.35,
+          zIndex: 1
         }} />
 
-        {/* Floating elements */}
-        <div style={{
-          position: 'absolute',
-          top: '20%',
-          left: '10%',
-          width: '100px',
-          height: '100px',
-          background: 'rgba(13, 148, 136, 0.1)',
-          borderRadius: '50%',
-          filter: 'blur(40px)',
-          animation: 'float 6s ease-in-out infinite',
-          zIndex: 1
-        }} />
-        <div style={{
-          position: 'absolute',
-          bottom: '20%',
-          right: '10%',
-          width: '150px',
-          height: '150px',
-          background: 'rgba(255, 107, 107, 0.1)',
-          borderRadius: '50%',
-          filter: 'blur(50px)',
-          animation: 'float 8s ease-in-out infinite reverse',
-          zIndex: 1
-        }} />
-        
         <div className="main-container" style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ textAlign: 'center', maxWidth: '900px', margin: '0 auto' }}>
-            <h1 className="page-title" style={{
-              fontSize: 'clamp(2.5rem, 8vw, 5rem)',
-              fontWeight: '800',
-              marginBottom: '32px',
-              color: '#F8FAFC',
-              textShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-              animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-              lineHeight: '1.1'
-            }}>
-              🚀 AI-Driven Job Matching
-            </h1>
-            <h2 style={{
-              fontSize: 'clamp(1.25rem, 4vw, 2rem)',
-              fontWeight: '600',
-              marginBottom: '24px',
-              color: 'rgba(248, 250, 252, 0.95)',
-              fontFamily: 'DM Sans, sans-serif',
-              animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both'
-            }}>
-              Connect Talent with Opportunity
-            </h2>
-            <p style={{
-              fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-              marginBottom: '48px',
-              color: 'rgba(248, 250, 252, 0.9)',
-              maxWidth: '700px',
-              margin: '0 auto 48px',
-              lineHeight: '1.8',
-              fontFamily: 'DM Sans, sans-serif',
-              animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both'
-            }}>
-              Our intelligent platform uses AI to analyze resumes and match candidates with the perfect job opportunities. 
-              Faster, smarter, and more accurate than traditional hiring methods.
-            </p>
-            
-            <div className="grid-2" style={{
-              maxWidth: '700px',
-              margin: '0 auto',
-              gap: '32px',
-              animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both'
-            }}>
-              <div className="card-custom animate-delay-1" style={{
-                padding: '40px 32px',
-                textAlign: 'center',
-                background: 'rgba(255, 255, 255, 0.98)',
-                backdropFilter: 'blur(20px)',
-                cursor: 'pointer',
-                transition: 'var(--transition)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-xl)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1.1fr 0.9fr',
+            gap: '48px',
+            alignItems: 'center'
+          }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 10,
+                padding: '8px 12px',
+                borderRadius: 999,
+                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'rgba(255,255,255,0.06)',
+                backdropFilter: 'blur(14px)',
+                color: 'rgba(248, 250, 252, 0.92)',
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 13,
+                fontWeight: 600,
+                marginBottom: 18
               }}>
-                <div style={{
-                  fontSize: '4.5rem',
-                  marginBottom: '24px',
-                  filter: 'drop-shadow(0 4px 8px rgba(13, 148, 136, 0.2))',
-                  animation: 'scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both'
-                }}>👔</div>
-                <h3 style={{
-                  color: 'var(--text-primary)',
-                  marginBottom: '12px',
-                  fontFamily: 'Fraunces, serif',
-                  fontSize: '1.5rem'
-                }}>For Recruiters</h3>
-                <p style={{
-                  color: 'var(--text-secondary)',
-                  marginBottom: '32px',
+                <Bot size={16} />
+                TalentMatch AI – Recruiter-grade matching
+              </div>
+
+              <h1 style={{
+                margin: 0,
+                fontFamily: 'Fraunces, serif',
+                fontWeight: 800,
+                fontSize: 'clamp(2.2rem, 5vw, 3.9rem)',
+                lineHeight: 1.05,
+                letterSpacing: '-0.03em',
+                color: '#F8FAFC',
+                textShadow: '0 10px 40px rgba(0,0,0,0.35)'
+              }}>
+                Find high-quality candidates and generate AI-powered job matches in seconds
+              </h1>
+
+              <p style={{
+                marginTop: 18,
+                marginBottom: 26,
+                maxWidth: 640,
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 'clamp(1rem, 2vw, 1.125rem)',
+                lineHeight: 1.75,
+                color: 'rgba(248, 250, 252, 0.85)'
+              }}>
+                Upload resumes, analyze job compatibility, and get instant match scores with skill insights.
+              </p>
+
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}>
+                <Link to="/register" className="btn-primary-custom" style={{ textDecoration: 'none' }}>
+                  Get Started <ArrowRight size={16} />
+                </Link>
+                <Link to="/login" style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 10,
+                  height: 52,
+                  padding: '0 18px',
+                  borderRadius: 'var(--radius)',
+                  textDecoration: 'none',
+                  color: '#F8FAFC',
                   fontFamily: 'DM Sans, sans-serif',
-                  lineHeight: '1.6'
+                  fontWeight: 600,
+                  border: '1px solid rgba(255,255,255,0.18)',
+                  background: 'rgba(255,255,255,0.06)',
+                  backdropFilter: 'blur(14px)'
                 }}>
-                  Post jobs and find perfect candidates with AI-powered matching
-                </p>
-                <Link to="/register" className="btn-primary-custom w-full" style={{ textDecoration: 'none', display: 'block' }}>
-                  Get Started →
+                  Login
                 </Link>
               </div>
-              
-              <div className="card-custom animate-delay-2" style={{
-                padding: '40px 32px',
-                textAlign: 'center',
-                background: 'rgba(255, 255, 255, 0.98)',
-                backdropFilter: 'blur(20px)',
-                cursor: 'pointer',
-                transition: 'var(--transition)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-xl)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-              }}>
-                <div style={{
-                  fontSize: '4.5rem',
-                  marginBottom: '24px',
-                  filter: 'drop-shadow(0 4px 8px rgba(255, 107, 107, 0.2))',
-                  animation: 'scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s both'
-                }}>👨💼</div>
-                <h3 style={{
-                  color: 'var(--text-primary)',
-                  marginBottom: '12px',
-                  fontFamily: 'Fraunces, serif',
-                  fontSize: '1.5rem'
-                }}>For Candidates</h3>
-                <p style={{
-                  color: 'var(--text-secondary)',
-                  marginBottom: '32px',
-                  fontFamily: 'DM Sans, sans-serif',
-                  lineHeight: '1.6'
-                }}>
-                  Upload your resume and discover matching opportunities
-                </p>
-                <Link to="/register" className="btn-primary-custom w-full" style={{ textDecoration: 'none', display: 'block' }}>
-                  Get Started →
-                </Link>
+
+              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', color: 'rgba(248, 250, 252, 0.78)', fontFamily: 'DM Sans, sans-serif', fontSize: 13 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                  <CheckCircle2 size={16} color="#34D399" />
+                  AI-powered matching
+                </span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                  <Clock size={16} color="#A5B4FC" />
+                  Real-time insights
+                </span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                  <BadgeCheck size={16} color="#C084FC" />
+                  Skill-based scoring
+                </span>
               </div>
             </div>
+
+            {/* AI dashboard preview mockup */}
+            <div style={{ minWidth: 0 }}>
+              <div className="card-custom" style={{
+                background: 'rgba(255, 255, 255, 0.94)',
+                border: '1px solid rgba(255,255,255,0.30)',
+                boxShadow: '0 22px 80px rgba(0,0,0,0.35)',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '14px 16px',
+                  borderBottom: '1px solid rgba(15, 23, 42, 0.06)',
+                  background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(168, 85, 247, 0.06))'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: 999, background: '#EF4444' }} />
+                    <div style={{ width: 10, height: 10, borderRadius: 999, background: '#F59E0B' }} />
+                    <div style={{ width: 10, height: 10, borderRadius: 999, background: '#10B981' }} />
+                    <div style={{ marginLeft: 8, fontFamily: 'DM Sans, sans-serif', fontWeight: 700, color: 'var(--text-primary)' }}>
+                      TalentMatch AI
+                    </div>
+                  </div>
+                  <span className="badge-custom badge-primary" style={{ fontSize: 10 }}>AI MATCHES</span>
+                </div>
+
+                <div style={{ padding: 16 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, marginBottom: 14 }}>
+                    <div className="stat-card" style={{ padding: 14 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        <BriefcaseBusiness size={14} /> Jobs
+                      </div>
+                      <div className="stat-number" style={{ marginTop: 4, color: 'var(--primary)' }}>12</div>
+                    </div>
+                    <div className="stat-card" style={{ padding: 14 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        <ChartNoAxesCombined size={14} /> Matches
+                      </div>
+                      <div className="stat-number" style={{ marginTop: 4, color: 'var(--accent)' }}>84</div>
+                    </div>
+                    <div className="stat-card" style={{ padding: 14 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontFamily: 'DM Sans, sans-serif', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        <Zap size={14} /> Top score
+                      </div>
+                      <div className="stat-number" style={{ marginTop: 4, color: 'var(--success)' }}>92%</div>
+                    </div>
+                  </div>
+
+                  <div style={{ padding: 14, borderRadius: 16, border: '1px solid rgba(15, 23, 42, 0.08)', background: 'white' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 800, color: 'var(--text-primary)' }}>
+                          Senior Frontend Engineer
+                        </div>
+                        <div style={{ marginTop: 2, fontFamily: 'DM Sans, sans-serif', color: 'var(--text-muted)', fontSize: 12 }}>
+                          AI insights updated just now
+                        </div>
+                      </div>
+                      <span className="badge-custom badge-success" style={{ fontSize: 10 }}>LIVE</span>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 10 }}>
+                      <span className="badge-custom badge-primary" style={{ fontSize: 10 }}>React</span>
+                      <span className="badge-custom badge-primary" style={{ fontSize: 10 }}>TypeScript</span>
+                      <span className="badge-custom badge-primary" style={{ fontSize: 10 }}>Testing</span>
+                      <span className="badge-custom badge-neutral" style={{ fontSize: 10 }}>+3</span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12 }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'DM Sans, sans-serif', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 6 }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                            <BrainCircuit size={14} /> Match score
+                          </span>
+                          <span style={{ fontWeight: 800, color: 'var(--text-primary)' }}>87%</span>
+                        </div>
+                        <div className="progress-bar" style={{ width: '100%' }}>
+                          <div className="progress-fill" style={{ width: '87%', backgroundColor: 'var(--primary)' }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: 12, padding: 12, borderRadius: 14, background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.06), rgba(168, 85, 247, 0.05))', border: '1px solid rgba(79, 70, 229, 0.10)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'DM Sans, sans-serif', fontWeight: 800, fontSize: 12, color: 'var(--text-primary)' }}>
+                        <Sparkles size={14} /> Why this match?
+                      </div>
+                      <div style={{ marginTop: 6, fontFamily: 'DM Sans, sans-serif', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+                        Strong React + TypeScript alignment and recent project experience matching role requirements.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+                    <div style={{ padding: 14, borderRadius: 16, border: '1px solid rgba(15, 23, 42, 0.08)', background: 'white' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'DM Sans, sans-serif', fontWeight: 800, fontSize: 12, color: 'var(--text-primary)' }}>
+                        <FileUp size={14} /> Resume intake
+                      </div>
+                      <div style={{ marginTop: 8, height: 10, borderRadius: 999, background: 'rgba(15, 23, 42, 0.06)', overflow: 'hidden' }}>
+                        <div className="shimmer" style={{ height: '100%', width: '75%' }} />
+                      </div>
+                      <div style={{ marginTop: 8, fontFamily: 'DM Sans, sans-serif', fontSize: 12, color: 'var(--text-muted)' }}>
+                        Parsing skills…
+                      </div>
+                    </div>
+                    <div style={{ padding: 14, borderRadius: 16, border: '1px solid rgba(15, 23, 42, 0.08)', background: 'white' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'DM Sans, sans-serif', fontWeight: 800, fontSize: 12, color: 'var(--text-primary)' }}>
+                        <BrainCircuit size={14} /> AI reasoning
+                      </div>
+                      <div style={{ marginTop: 8, fontFamily: 'DM Sans, sans-serif', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+                        Skill overlap, experience level, and missing-skill gaps.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 44, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+            {[
+              { icon: <BrainCircuit size={18} color="var(--primary)" />, title: 'AI-powered matching', desc: 'Instant scoring and skill alignment across candidates and roles.' },
+              { icon: <ChartNoAxesCombined size={18} color="var(--accent)" />, title: 'Real-time insights', desc: 'Understand fit, gaps, and trends at a glance.' },
+              { icon: <Zap size={18} color="#34D399" />, title: 'Fast, recruiter-first', desc: 'Designed to be efficient, clear, and action-oriented.' }
+            ].map((f) => (
+              <div key={f.title} style={{
+                padding: 16,
+                borderRadius: 20,
+                border: '1px solid rgba(255,255,255,0.10)',
+                background: 'rgba(255,255,255,0.05)',
+                backdropFilter: 'blur(14px)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'rgba(248, 250, 252, 0.92)', fontFamily: 'DM Sans, sans-serif', fontWeight: 800 }}>
+                  {f.icon} {f.title}
+                </div>
+                <div style={{ marginTop: 6, color: 'rgba(248, 250, 252, 0.78)', fontFamily: 'DM Sans, sans-serif', fontSize: 13, lineHeight: 1.6 }}>
+                  {f.desc}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -464,12 +543,12 @@ const HomePage = () => {
             marginBottom: 'var(--spacing-xl)'
           }}>
             {[
-              { icon: '🤖', title: 'AI-Powered Matching', desc: 'Advanced algorithms analyze skills and experience for perfect matches' },
-              { icon: '⚡', title: 'Lightning Fast', desc: 'Get results in seconds, not days. Instant candidate-job compatibility scores' },
-              { icon: '🎯', title: 'Accurate Results', desc: 'Precision matching based on skills, experience, and requirements' },
-              { icon: '📊', title: 'Detailed Analytics', desc: 'Comprehensive insights into match quality and candidate fit' },
-              { icon: '🔒', title: 'Secure & Private', desc: 'Your data is protected with enterprise-grade security' },
-              { icon: '💼', title: 'Easy Management', desc: 'Intuitive dashboard for managing jobs and applications' }
+              { icon: <BrainCircuit size={26} color="var(--primary)" />, title: 'AI-Powered Matching', desc: 'Advanced analysis of skills and experience for high-signal matches.' },
+              { icon: <Zap size={26} color="var(--accent)" />, title: 'Lightning Fast', desc: 'Get results in seconds, not days. Instant candidate-job compatibility.' },
+              { icon: <CheckCircle2 size={26} color="var(--success)" />, title: 'Accurate Results', desc: 'Clarity-first scoring based on skills and experience alignment.' },
+              { icon: <ChartNoAxesCombined size={26} color="var(--primary)" />, title: 'Detailed Analytics', desc: 'See match quality, gaps, and trends with recruiter-friendly insights.' },
+              { icon: <BadgeCheck size={26} color="var(--accent)" />, title: 'Secure & Private', desc: 'Your data stays protected with modern security best practices.' },
+              { icon: <BriefcaseBusiness size={26} color="var(--primary)" />, title: 'Easy Management', desc: 'Clean workflows for jobs, candidates, and AI results.' }
             ].map((feature, idx) => (
               <div key={idx} className="card-custom" style={{
                 padding: 'var(--spacing-lg)',
@@ -485,7 +564,7 @@ const HomePage = () => {
                 e.currentTarget.style.transform = 'translateY(0)';
                 e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
               }}>
-                <div style={{ fontSize: '3rem', marginBottom: 'var(--spacing-sm)' }}>{feature.icon}</div>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'var(--spacing-sm)' }}>{feature.icon}</div>
                 <h3 style={{
                   fontFamily: 'Fraunces, serif',
                   fontSize: '1.25rem',
@@ -548,7 +627,7 @@ const HomePage = () => {
               fontSize: '1.125rem',
               padding: '16px 32px'
             }}>
-              Get Started Free →
+              Get Started <ArrowRight size={16} />
             </Link>
             <Link to="/login" style={{
               background: 'rgba(255, 255, 255, 0.1)',

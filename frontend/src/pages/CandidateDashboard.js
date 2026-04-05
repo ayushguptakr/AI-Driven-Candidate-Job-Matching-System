@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ResumeUpload from '../components/ResumeUpload';
 import { resumeAPI, jobAPI } from '../services/api';
+import DashboardShell from '../components/DashboardShell';
+import { BriefcaseBusiness, DollarSign, FileText, FileUp, LayoutDashboard, Mail, MapPin, Phone, Send, Sparkles, User2 } from 'lucide-react';
 
 const CandidateDashboard = () => {
   const [resumes, setResumes] = useState([]);
@@ -46,7 +48,7 @@ const CandidateDashboard = () => {
   const handleResumeUploaded = () => {
     loadData();
     setIsUploadResumeOpen(false);
-    setSuccessMessage('Resume uploaded successfully! ✅');
+    setSuccessMessage('Resume uploaded successfully.');
     setTimeout(() => setSuccessMessage(''), 3000);
   };
 
@@ -57,7 +59,7 @@ const CandidateDashboard = () => {
 
   const handleApply = async (jobId) => {
     if (resumes.length === 0) {
-      setSuccessMessage('Please upload a resume first before applying! 📄');
+      setSuccessMessage('Please upload a resume first before applying.');
       setTimeout(() => setSuccessMessage(''), 3000);
       setIsJobDetailOpen(false);
       setIsUploadResumeOpen(true);
@@ -67,7 +69,7 @@ const CandidateDashboard = () => {
     try {
       // For now, we'll just show a success message
       // In a real app, you'd call an API endpoint to submit the application
-      setSuccessMessage(`Application submitted successfully for ${selectedJob?.title}! 🎉`);
+      setSuccessMessage(`Application submitted successfully for ${selectedJob?.title}.`);
       setTimeout(() => setSuccessMessage(''), 5000);
       setIsJobDetailOpen(false);
       setSelectedJob(null);
@@ -82,25 +84,29 @@ const CandidateDashboard = () => {
   }, []);
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-secondary)', minHeight: '100vh', paddingTop: 'var(--spacing-lg)' }}>
-      <div className="main-container">
-        <div className="mb-xl">
-          <div className="flex items-center justify-between mb-md">
-            <div>
-              <h1 className="page-title">
-                <span className="icon-lg" style={{ marginRight: 'var(--spacing-sm)' }}>👨💼</span>
-                Candidate Dashboard
-              </h1>
-              <p className="page-subtitle">Upload your resume and discover matching job opportunities</p>
-            </div>
-            <button 
-              className="btn-primary-custom"
-              onClick={() => setIsUploadResumeOpen(true)}
-              style={{ height: '48px', fontSize: '14px', fontWeight: '600' }}
-            >
-              📄 Upload New Resume
-            </button>
-          </div>
+    <div style={{ paddingTop: 'var(--spacing-lg)' }}>
+      <DashboardShell
+        title="Candidate Dashboard"
+        subtitle="Upload your resume and review matched opportunities."
+        actions={
+          <button
+            className="btn-primary-custom"
+            onClick={() => setIsUploadResumeOpen(true)}
+            style={{ height: '48px', fontSize: '14px', fontWeight: '700' }}
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+              <FileUp size={16} />
+              Upload Resume
+            </span>
+          </button>
+        }
+        navItems={[
+          { to: '/candidate/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
+          { to: '/candidate/dashboard', label: 'Upload Resume', icon: <FileUp size={18} /> },
+          { to: '/candidate/dashboard', label: 'Matched Jobs', icon: <BriefcaseBusiness size={18} /> },
+          { to: '/profile', label: 'Profile', icon: <User2 size={18} /> }
+        ]}
+      >
           
           {successMessage && (
             <div style={{
@@ -124,7 +130,7 @@ const CandidateDashboard = () => {
             marginBottom: 'var(--spacing-lg)'
           }}>
             <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>📄</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}><FileUp size={22} color="var(--primary)" /></div>
               <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
                 {stats.totalResumes}
               </div>
@@ -133,7 +139,7 @@ const CandidateDashboard = () => {
               </div>
             </div>
             <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>💼</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}><BriefcaseBusiness size={22} color="var(--accent)" /></div>
               <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--accent)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
                 {stats.totalJobs}
               </div>
@@ -142,7 +148,7 @@ const CandidateDashboard = () => {
               </div>
             </div>
             <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>⭐</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}><Sparkles size={22} color="var(--success)" /></div>
               <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--success)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
                 {stats.recommendedJobs}
               </div>
@@ -151,7 +157,7 @@ const CandidateDashboard = () => {
               </div>
             </div>
             <div className="card-custom" style={{ padding: '24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🎯</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}><Sparkles size={22} color="var(--warning)" /></div>
               <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--warning)', marginBottom: '4px', fontFamily: 'Fraunces, serif' }}>
                 {stats.avgMatchScore}%
               </div>
@@ -165,14 +171,13 @@ const CandidateDashboard = () => {
           <div style={{ marginBottom: 'var(--spacing-md)' }}>
             <input
               type="text"
-              placeholder="🔍 Search jobs by title, company, or location..."
+              placeholder="Search jobs by title, company, or location..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="form-control-custom"
               style={{ maxWidth: '500px' }}
             />
           </div>
-        </div>
         
         <div className="grid-2 gap-lg">
           <div>
@@ -180,7 +185,6 @@ const CandidateDashboard = () => {
             <div className="card-custom">
               <div className="card-header-custom flex items-center justify-between">
                 <h3 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>
-                  <span className="icon-md" style={{ marginRight: 'var(--spacing-xs)' }}>📄</span>
                   Your Resumes
                 </h3>
                 <span className="badge-custom badge-primary">{resumes.length}</span>
@@ -188,7 +192,9 @@ const CandidateDashboard = () => {
               <div className="content-section">
                 {resumes.length === 0 ? (
                   <div className="empty-state">
-                    <div className="empty-icon">📄</div>
+                    <div className="empty-icon" aria-hidden="true" style={{ display: 'flex', justifyContent: 'center' }}>
+                      <FileUp size={44} color="var(--text-muted)" />
+                    </div>
                     <h4 style={{ color: 'var(--text-primary)' }}>No resumes uploaded yet</h4>
                     <p>Upload your first resume to get started</p>
                   </div>
@@ -208,10 +214,12 @@ const CandidateDashboard = () => {
                           </span>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-                          <span className="icon-sm">📧</span> {resume.email} • <span className="icon-sm">📞</span> {resume.phone}
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Mail size={14} color="#9CA3AF" /> {resume.email}</span>
+                          <span style={{ opacity: 0.35, margin: '0 8px' }}>•</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Phone size={14} color="#9CA3AF" /> {resume.phone}</span>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--primary-color)', marginBottom: 'var(--spacing-xs)' }}>
-                          <span className="icon-sm">📁</span> {resume.fileName}
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><FileText size={14} color="#9CA3AF" /> {resume.fileName}</span>
                         </div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                           {resume.skills.slice(0, 4).map((skill, idx) => (
@@ -237,7 +245,6 @@ const CandidateDashboard = () => {
             <div className="card-custom">
               <div className="card-header-custom flex items-center justify-between">
                 <h3 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>
-                  <span className="icon-md" style={{ marginRight: 'var(--spacing-xs)' }}>🔍</span>
                   Available Jobs
                 </h3>
                 <span className="badge-custom badge-primary">{jobs.length}</span>
@@ -245,7 +252,9 @@ const CandidateDashboard = () => {
               <div className="content-section" style={{ maxHeight: '600px' }}>
                 {jobs.length === 0 ? (
                   <div className="empty-state">
-                    <div className="empty-icon">💼</div>
+                    <div className="empty-icon" aria-hidden="true" style={{ display: 'flex', justifyContent: 'center' }}>
+                      <BriefcaseBusiness size={44} color="var(--text-muted)" />
+                    </div>
                     <h4 style={{ color: 'var(--text-primary)' }}>No jobs available</h4>
                     <p>Check back later for new opportunities</p>
                   </div>
@@ -268,7 +277,9 @@ const CandidateDashboard = () => {
                           <span className="badge-custom badge-primary">{job.company}</span>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: 'var(--spacing-xs)' }}>
-                          <span className="icon-sm">📍</span> {job.location} • <span className="icon-sm">💰</span> {job.salary}
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><MapPin size={14} color="#9CA3AF" /> {job.location}</span>
+                          <span style={{ opacity: 0.35, margin: '0 8px' }}>•</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><DollarSign size={14} color="#9CA3AF" /> {job.salary}</span>
                         </div>
                         <p style={{ 
                           fontSize: '0.75rem', 
@@ -312,7 +323,7 @@ const CandidateDashboard = () => {
                               flex: 1
                             }}
                           >
-                            📋 View Details
+                            View Details
                           </button>
                           <button
                             onClick={(e) => {
@@ -341,7 +352,7 @@ const CandidateDashboard = () => {
                               e.target.style.boxShadow = 'none';
                             }}
                           >
-                            ✉️ Apply
+                            Apply
                           </button>
                         </div>
                       </div>
@@ -393,7 +404,7 @@ const CandidateDashboard = () => {
             >
               <div className="card-header-custom flex items-center justify-between">
                 <h2 className="section-title" style={{ margin: 0, padding: 0, border: 'none' }}>
-                  💼 {selectedJob.title}
+                  {selectedJob.title}
                 </h2>
                 <button 
                   onClick={() => setIsJobDetailOpen(false)}
@@ -429,11 +440,11 @@ const CandidateDashboard = () => {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: 'var(--spacing-md)' }}>
                     <span className="badge-custom badge-primary">{selectedJob.company}</span>
                     <span className="badge-custom badge-secondary">
-                      <span className="icon-sm">📍</span> {selectedJob.location}
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><MapPin size={14} color="#9CA3AF" /> {selectedJob.location}</span>
                     </span>
                     {selectedJob.salary && (
                       <span className="badge-custom badge-success">
-                        <span className="icon-sm">💰</span> {selectedJob.salary}
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><DollarSign size={14} color="#059669" /> {selectedJob.salary}</span>
                       </span>
                     )}
                   </div>
@@ -547,14 +558,17 @@ const CandidateDashboard = () => {
                     className="btn-primary-custom"
                     style={{ flex: 2 }}
                   >
-                    ✉️ Apply for this Position
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                      <Send size={16} />
+                      Apply for this Position
+                    </span>
                   </button>
                 </div>
               </div>
             </div>
           </div>
         )}
-      </div>
+      </DashboardShell>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { resumeAPI } from '../services/api';
+import { FileUp } from 'lucide-react';
 
 const ResumeUpload = ({ onResumeUploaded, onClose }) => {
   const [formData, setFormData] = useState({
@@ -12,7 +13,7 @@ const ResumeUpload = ({ onResumeUploaded, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      setMessage('Please select a resume file 📄');
+      setMessage('Please select a resume file.');
       return;
     }
 
@@ -28,7 +29,7 @@ const ResumeUpload = ({ onResumeUploaded, onClose }) => {
       onResumeUploaded?.();
       onClose?.();
     } catch (error) {
-      setMessage('Error uploading resume ❌');
+      setMessage('Error uploading resume.');
     }
     setLoading(false);
   };
@@ -64,7 +65,7 @@ const ResumeUpload = ({ onResumeUploaded, onClose }) => {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="card-header-custom flex items-center justify-between">
-            <h2 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>📄 Upload Your Resume</h2>
+            <h2 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>Upload Resume</h2>
             <button 
               onClick={onClose}
               style={{
@@ -170,7 +171,9 @@ const ResumeUpload = ({ onResumeUploaded, onClose }) => {
                   backgroundColor: '#f9fafb',
                   transition: 'border-color 0.2s ease'
                 }}>
-                  <div style={{ fontSize: '3rem', marginBottom: '12px', opacity: 0.6 }}>📄</div>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px', opacity: 0.7 }}>
+                    <FileUp size={34} color="var(--text-muted)" />
+                  </div>
                   <h4 style={{ marginBottom: '8px', color: 'var(--text-primary)' }}>Choose your resume file</h4>
                   <p style={{ color: 'var(--text-muted)', marginBottom: '16px', fontSize: '14px' }}>PDF, DOC, DOCX, or TXT files accepted</p>
                   <input
@@ -203,7 +206,7 @@ const ResumeUpload = ({ onResumeUploaded, onClose }) => {
                   Cancel
                 </button>
                 <button type="submit" className="btn-primary-custom" style={{ flex: 2 }} disabled={loading}>
-                  {loading ? '🔄 Uploading...' : '🚀 Upload Resume'}
+                  {loading ? 'Uploading…' : 'Upload Resume'}
                 </button>
               </div>
             </form>

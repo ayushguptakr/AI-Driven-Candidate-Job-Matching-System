@@ -1,23 +1,59 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { jobAPI } from '../services/api';
 
 const JobForm = ({ onJobCreated, onClose }) => {
   const [job, setJob] = useState({
     title: '', company: '', description: '', requirements: '', eligibility: '', location: '', salary: '', postedBy: ''
   });
+  const [requiredSkills, setRequiredSkills] = useState([]);
+  const [skillDraft, setSkillDraft] = useState('');
+  const [experienceLevel, setExperienceLevel] = useState('mid');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const normalizedSkills = useMemo(() => {
+    const set = new Set(requiredSkills.map((s) => String(s).trim()).filter(Boolean));
+    return Array.from(set);
+  }, [requiredSkills]);
+
+  const addSkill = (raw) => {
+    const cleaned = String(raw || '').trim();
+    if (!cleaned) return;
+    setRequiredSkills((prev) => [...prev, cleaned]);
+    setSkillDraft('');
+  };
+
+  const removeSkill = (skill) => {
+    setRequiredSkills((prev) => prev.filter((s) => s !== skill));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await jobAPI.create(job);
+      const requirementsParts = [
+        job.requirements?.trim(),
+        normalizedSkills.length ? `Required skills: ${normalizedSkills.join(', ')}` : null
+      ].filter(Boolean);
+
+      const eligibilityParts = [
+        job.eligibility?.trim(),
+        experienceLevel ? `Experience level: ${experienceLevel}` : null
+      ].filter(Boolean);
+
+      await jobAPI.create({
+        ...job,
+        requirements: requirementsParts.join('\n\n'),
+        eligibility: eligibilityParts.join('\n')
+      });
       setJob({ title: '', company: '', description: '', requirements: '', eligibility: '', location: '', salary: '', postedBy: '' });
+      setRequiredSkills([]);
+      setSkillDraft('');
+      setExperienceLevel('mid');
       onJobCreated?.();
       onClose?.();
     } catch (error) {
-      setMessage('Error posting job ❌');
+      setMessage('Error posting job');
     }
     setLoading(false);
   };
@@ -53,7 +89,7 @@ const JobForm = ({ onJobCreated, onClose }) => {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="card-header-custom flex items-center justify-between">
-            <h2 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>💼 Post New Job</h2>
+            <h2 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>Post New Job</h2>
             <button 
               onClick={onClose}
               style={{
@@ -119,14 +155,97 @@ const JobForm = ({ onJobCreated, onClose }) => {
               </div>
               
               <div className="form-group-custom">
-                <label className="form-label">Requirements & Skills</label>
+                <label className="form-label">Required Skills</label>
+                <div style={{
+                  border: '2px solid var(--border)',
+                  borderRadius: 'var(--radius)',
+                  padding: '12px',
+                  background: 'var(--bg-primary)'
+                }}>
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <input
+                      className="form-control-custom"
+                      style={{ height: 44 }}
+                      value={skillDraft}
+                      onChange={(e) => setSkillDraft(e.target.value)}
+                      placeholder="Type a skill and press Enter (e.g., React)"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addSkill(skillDraft);
+                        }
+                        if (e.key === ',' ) {
+                          e.preventDefault();
+                          addSkill(skillDraft);
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="btn-primary-custom"
+                      style={{ height: 44, padding: '0 14px' }}
+                      onClick={() => addSkill(skillDraft)}
+                      disabled={!skillDraft.trim()}
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+                    {normalizedSkills.map((skill) => (
+                      <button
+                        key={skill}
+                        type="button"
+                        className="badge-custom badge-primary"
+                        style={{ cursor: 'pointer' }}
+                        title="Click to remove"
+                        onClick={() => removeSkill(skill)}
+                      >
+                        {skill} ×
+                      </button>
+                    ))}
+                    {normalizedSkills.length === 0 && (
+                      <span className="badge-custom badge-neutral" style={{ fontSize: 11 }}>
+                        No skills added yet
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid-2">
+                <div className="form-group-custom">
+                  <label className="form-label">Experience Level</label>
+                  <select
+                    className="form-control-custom"
+                    value={experienceLevel}
+                    onChange={(e) => setExperienceLevel(e.target.value)}
+                  >
+                    <option value="junior">Junior</option>
+                    <option value="mid">Mid</option>
+                    <option value="senior">Senior</option>
+                    <option value="lead">Lead</option>
+                  </select>
+                </div>
+                <div className="form-group-custom">
+                  <label className="form-label">Posted By</label>
+                  <input
+                    className="form-control-custom"
+                    value={job.postedBy}
+                    onChange={(e) => setJob({...job, postedBy: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group-custom">
+                <label className="form-label">Additional Requirements</label>
                 <textarea
                   className="form-control-custom"
                   style={{ height: '92px', resize: 'vertical', paddingTop: '12px', paddingBottom: '12px' }}
                   value={job.requirements}
                   onChange={(e) => setJob({...job, requirements: e.target.value})}
-                  placeholder="List required skills, experience, qualifications..."
-                  required
+                  placeholder="Optional details: certifications, constraints, tools, etc."
                 />
               </div>
 
@@ -159,15 +278,7 @@ const JobForm = ({ onJobCreated, onClose }) => {
                     onChange={(e) => setJob({...job, salary: e.target.value})}
                   />
                 </div>
-                <div className="form-group-custom">
-                  <label className="form-label">Posted By</label>
-                  <input
-                    className="form-control-custom"
-                    value={job.postedBy}
-                    onChange={(e) => setJob({...job, postedBy: e.target.value})}
-                    required
-                  />
-                </div>
+                <div className="form-group-custom" />
               </div>
               
               <div className="flex gap-sm">
@@ -190,7 +301,7 @@ const JobForm = ({ onJobCreated, onClose }) => {
                   Cancel
                 </button>
                 <button type="submit" className="btn-primary-custom" style={{ flex: 2 }} disabled={loading}>
-                  {loading ? '🔄 Posting...' : '🚀 Post Job'}
+                  {loading ? 'Posting…' : 'Analyze & Post Job'}
                 </button>
               </div>
             </form>
