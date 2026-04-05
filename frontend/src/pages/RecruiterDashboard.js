@@ -3,7 +3,7 @@ import JobForm from '../components/JobForm';
 import MatchResults from '../components/MatchResults';
 import { jobAPI } from '../services/api';
 import DashboardShell from '../components/DashboardShell';
-import { BrainCircuit, BriefcaseBusiness, Building2, Calendar, DollarSign, FilePlus2, MapPin, Settings2, Users } from 'lucide-react';
+import { BrainCircuit, BriefcaseBusiness, Building2, Calendar, IndianRupee, FilePlus2, MapPin, Settings2, Users } from 'lucide-react';
 
 const RecruiterDashboard = () => {
   const [jobs, setJobs] = useState([]);
@@ -185,7 +185,7 @@ const RecruiterDashboard = () => {
                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><MapPin size={14} color="#9CA3AF" /> {job.location}</span>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--success-color)' }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><RupeeSign size={14} color="#9CA3AF" /> {job.salary}</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><IndianRupee size={14} color="#9CA3AF" /> {job.salary}</span>
                         </div>
                       </div>
                     </div>
