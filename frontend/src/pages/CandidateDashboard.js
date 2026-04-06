@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ResumeUpload from '../components/ResumeUpload';
 import { resumeAPI, jobAPI } from '../services/api';
 import DashboardShell from '../components/DashboardShell';
-import { BriefcaseBusiness, DollarSign, FileText, FileUp, IndianRupee, LayoutDashboard, Mail, MapPin, Phone, Send, Sparkles, User2 } from 'lucide-react';
+import { BriefcaseBusiness, DollarSign, FileText, FileUp, IndianRupee, DollarSign, LayoutDashboard, Mail, MapPin, Phone, Send, Sparkles, User2 } from 'lucide-react';
 
 const CandidateDashboard = () => {
   const [resumes, setResumes] = useState([]);
