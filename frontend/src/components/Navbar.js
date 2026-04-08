@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Bell, LayoutDashboard, LogOut, Settings2, Sparkles } from 'lucide-react';
+import { Bell, LayoutDashboard, LogOut, Settings2 } from 'lucide-react';
+import LogoLink from './ui/LogoLink';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -10,8 +11,8 @@ const Navbar = () => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([
-    { id: 1, text: "Welcome to TalentMatch AI!", time: "Just now", unread: true },
-    { id: 2, text: "Complete your profile to unlock AI matching", time: "1h ago", unread: false }
+    { id: 1, title: "Welcome!", message: "Welcome to TalentMatch AI!", time: "Just now", read: false },
+    { id: 2, title: "Profile", message: "Complete your profile to unlock AI matching", time: "1h ago", read: false }
   ]);
   const profileMenuRef = useRef(null);
   const notificationsRef = useRef(null);
@@ -39,367 +40,154 @@ const Navbar = () => {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <nav className="sticky-nav" style={{
-      padding: '20px 0',
-      boxShadow: 'var(--shadow-md)',
-      transition: 'var(--transition)'
-    }}>
-      <div className="main-container flex items-center justify-between">
-        <Link to="/" style={{ textDecoration: 'none' }}>
-          <h1 style={{
-            color: '#F8FAFC',
-            fontSize: '1.5rem',
-            fontWeight: '700',
-            margin: 0,
-            fontFamily: 'Fraunces, serif',
-            letterSpacing: '-0.02em',
-            textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-            transition: 'var(--transition-fast)'
-          }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ display: 'inline-flex', width: 30, height: 30, borderRadius: 10, alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.18)' }}>
-                <Sparkles size={16} />
-              </span>
-              TalentMatch AI
-            </span>
-          </h1>
-        </Link>
+    <nav className="sticky top-0 z-50 w-full bg-[#0a0520]/80 backdrop-blur-md border-b border-white/10 transition-all font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          
+          {/* Logo */}
+          <LogoLink />
 
-        <div className="flex gap-md items-center">
-          {user ? (
-            <>
-              {/* Dashboard Link */}
-              <Link 
-                to={user.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard'} 
-                style={{
-                  color: '#F8FAFC',
-                  textDecoration: 'none',
-                  padding: '10px 20px',
-                  borderRadius: 'var(--radius)',
-                  transition: 'var(--transition-fast)',
-                  fontFamily: 'DM Sans, sans-serif',
-                  fontWeight: '500',
-                  background: location.pathname.includes('/recruiter') || location.pathname.includes('/candidate') 
-                    ? 'rgba(255, 255, 255, 0.2)' 
-                    : 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  backdropFilter: 'blur(10px)'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = 'rgba(255, 255, 255, 0.25)';
-                  e.target.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = location.pathname.includes('/recruiter') || location.pathname.includes('/candidate')
-                    ? 'rgba(255, 255, 255, 0.2)'
-                    : 'rgba(255, 255, 255, 0.1)';
-                  e.target.style.transform = 'translateY(0)';
-                }}
-              >
-                Dashboard
-              </Link>
-
-              {/* Notifications */}
-              <div style={{ position: 'relative' }} ref={notificationsRef}>
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: 'var(--radius)',
-                    padding: '10px',
-                    cursor: 'pointer',
-                    color: '#F8FAFC',
-                    fontSize: '1.2rem',
-                    position: 'relative',
-                    transition: 'var(--transition-fast)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-                  }}
+          {/* Navigation Links */}
+          <div className="flex items-center gap-4">
+            {user ? (
+              <>
+                {/* Dashboard Button */}
+                <Link 
+                  to={user.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard'} 
+                  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
+                    location.pathname.includes('/recruiter') || location.pathname.includes('/candidate')
+                      ? 'bg-purple-600/20 text-purple-400 border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.15)]'
+                      : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10 hover:text-white'
+                  }`}
                 >
-                  <Bell size={18} />
-                  {unreadCount > 0 && (
-                    <span style={{
-                      position: 'absolute',
-                      top: '-4px',
-                      right: '-4px',
-                      background: 'var(--accent)',
-                      color: 'white',
-                      borderRadius: '50%',
-                      width: '18px',
-                      height: '18px',
-                      fontSize: '0.7rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 'bold'
-                    }}>
-                      {unreadCount}
-                    </span>
+                  Dashboard
+                </Link>
+
+                {/* Notifications Dropdown */}
+                <div className="relative" ref={notificationsRef}>
+                  <button
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    className="relative flex items-center justify-center p-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 hover:text-white transition-all"
+                  >
+                    <Bell size={18} />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-purple-500 text-white text-[10px] font-bold rounded-full">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {showNotifications && (
+                    <div className="absolute right-0 mt-3 w-80 bg-[#0f082e] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[1000]">
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/[0.02]">
+                        <h3 className="font-bold text-white m-0">Notifications</h3>
+                        {unreadCount > 0 && (
+                          <span className="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-400 text-xs font-semibold">
+                            {unreadCount} new
+                          </span>
+                        )}
+                      </div>
+                      <div className="max-h-[350px] overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <div className="p-8 text-center text-slate-400 flex flex-col items-center">
+                            <Bell size={24} className="mb-2 opacity-30" />
+                            <p className="text-sm">No new notifications</p>
+                          </div>
+                        ) : (
+                          notifications.map((notif, idx) => (
+                            <div
+                              key={idx}
+                              className={`p-4 border-b border-white/5 cursor-pointer transition-colors hover:bg-white/5 ${
+                                !notif.read ? 'bg-purple-500/10' : 'transparent'
+                              }`}
+                            >
+                              <div className="text-sm font-semibold text-white mb-1">
+                                {notif.title}
+                              </div>
+                              <div className="text-xs text-slate-300 mb-2">
+                                {notif.message}
+                              </div>
+                              <div className="text-[10px] uppercase font-bold tracking-wider text-purple-400/80">
+                                {notif.time}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
                   )}
-                </button>
+                </div>
 
-                {showNotifications && (
-                  <div style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 10px)',
-                    right: 0,
-                    background: 'white',
-                    borderRadius: 'var(--radius-lg)',
-                    boxShadow: 'var(--shadow-lg)',
-                    minWidth: '320px',
-                    maxHeight: '400px',
-                    overflowY: 'auto',
-                    zIndex: 1000,
-                    border: '1px solid var(--border-light)'
-                  }}>
-                    <div style={{
-                      padding: '16px',
-                      borderBottom: '1px solid var(--border-light)',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}>
-                      <h3 style={{ margin: 0, fontSize: '1rem', fontFamily: 'Fraunces, serif' }}>Notifications</h3>
-                      {unreadCount > 0 && (
-                        <span className="badge-custom badge-primary">{unreadCount} new</span>
-                      )}
-                    </div>
-                    <div>
-                      {notifications.length === 0 ? (
-                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-                            <Bell size={22} color="var(--text-muted)" />
-                          </div>
-                          <p style={{ margin: 0 }}>No notifications</p>
+                {/* Profile Menu Dropdown */}
+                <div className="relative" ref={profileMenuRef}>
+                  <button
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    className="flex items-center justify-center w-10 h-10 rounded-full font-bold bg-gradient-to-tr from-purple-600 to-indigo-600 text-white border-2 border-white/20 hover:scale-105 transition-transform shadow-[0_0_15px_rgba(168,85,247,0.3)]"
+                  >
+                    {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  </button>
+
+                  {showProfileMenu && (
+                    <div className="absolute right-0 mt-3 w-56 bg-[#0f082e] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[1000]">
+                      <div className="p-4 border-b border-white/10 bg-gradient-to-bl from-purple-500/10 to-transparent">
+                        <div className="font-bold text-white text-sm mb-1 truncate">
+                          {user.name}
                         </div>
-                      ) : (
-                        notifications.map((notif, idx) => (
-                          <div
-                            key={idx}
-                            style={{
-                              padding: '16px',
-                              borderBottom: '1px solid var(--border-light)',
-                              cursor: 'pointer',
-                              background: !notif.read ? 'rgba(79, 70, 229, 0.05)' : 'transparent',
-                              transition: 'var(--transition-fast)'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.target.style.background = 'rgba(79, 70, 229, 0.1)';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.target.style.background = !notif.read ? 'rgba(79, 70, 229, 0.05)' : 'transparent';
-                            }}
-                          >
-                            <div style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '4px' }}>
-                              {notif.title}
-                            </div>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                              {notif.message}
-                            </div>
-                            <div style={{ fontSize: '0.625rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                              {notif.time}
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Profile Menu */}
-              <div style={{ position: 'relative' }} ref={profileMenuRef}>
-                <button
-                  onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: '50%',
-                    width: '40px',
-                    height: '40px',
-                    cursor: 'pointer',
-                    color: '#F8FAFC',
-                    fontSize: '1.2rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'var(--transition-fast)',
-                    backdropFilter: 'blur(10px)',
-                    fontWeight: 'bold'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-                    e.target.style.transform = 'scale(1.05)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-                    e.target.style.transform = 'scale(1)';
-                  }}
-                >
-                  {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                </button>
-
-                {showProfileMenu && (
-                  <div style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 10px)',
-                    right: 0,
-                    background: 'white',
-                    borderRadius: 'var(--radius-lg)',
-                    boxShadow: 'var(--shadow-lg)',
-                    minWidth: '200px',
-                    zIndex: 1000,
-                    border: '1px solid var(--border-light)',
-                    overflow: 'hidden'
-                  }}>
-                    <div style={{
-                      padding: '16px',
-                      borderBottom: '1px solid var(--border-light)',
-                      background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.05) 0%, rgba(168, 85, 247, 0.03) 100%)'
-                    }}>
-                      <div style={{ fontWeight: '600', fontFamily: 'DM Sans, sans-serif', marginBottom: '4px' }}>
-                        {user.name}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                        {user.email}
-                      </div>
-                      <div style={{ marginTop: '8px' }}>
-                        <span className="badge-custom badge-primary" style={{ fontSize: '0.625rem' }}>
+                        <div className="text-xs text-slate-400 truncate mb-3">
+                          {user.email}
+                        </div>
+                        <span className="px-2 py-1 rounded-md bg-purple-500/20 text-purple-400 text-[10px] uppercase tracking-wider font-bold">
                           {user.role === 'recruiter' ? 'Recruiter' : 'Candidate'}
                         </span>
                       </div>
-                    </div>
-                    <div>
-                      <Link
-                        to="/profile"
-                        style={{
-                          display: 'block',
-                          padding: '12px 16px',
-                          color: 'var(--text-primary)',
-                          textDecoration: 'none',
-                          transition: 'var(--transition-fast)',
-                          fontFamily: 'DM Sans, sans-serif',
-                          fontSize: '0.875rem'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.background = 'rgba(79, 70, 229, 0.05)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.background = 'transparent';
-                        }}
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-                          <Settings2 size={16} />
+                      <div className="py-2">
+                        <Link
+                          to="/profile"
+                          onClick={() => setShowProfileMenu(false)}
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
+                        >
+                          <Settings2 size={16} className="text-slate-400" />
                           Profile Settings
-                        </span>
-                      </Link>
-                      <Link
-                        to={user.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard'}
-                        style={{
-                          display: 'block',
-                          padding: '12px 16px',
-                          color: 'var(--text-primary)',
-                          textDecoration: 'none',
-                          transition: 'var(--transition-fast)',
-                          fontFamily: 'DM Sans, sans-serif',
-                          fontSize: '0.875rem'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.background = 'rgba(79, 70, 229, 0.05)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.background = 'transparent';
-                        }}
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-                          <LayoutDashboard size={16} />
+                        </Link>
+                        <Link
+                          to={user.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard'}
+                          onClick={() => setShowProfileMenu(false)}
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
+                        >
+                          <LayoutDashboard size={16} className="text-slate-400" />
                           Dashboard
-                        </span>
-                      </Link>
-                      <div
-                        style={{
-                          padding: '12px 16px',
-                          color: 'var(--danger)',
-                          cursor: 'pointer',
-                          transition: 'var(--transition-fast)',
-                          fontFamily: 'DM Sans, sans-serif',
-                          fontSize: '0.875rem',
-                          borderTop: '1px solid var(--border-light)',
-                          marginTop: '4px'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.background = 'rgba(239, 68, 68, 0.05)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.background = 'transparent';
-                        }}
-                        onClick={handleLogout}
-                      >
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                        </Link>
+                        <div className="h-px bg-white/5 my-2 mx-4" />
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors text-left"
+                        >
                           <LogOut size={16} />
                           Logout
-                        </span>
+                        </button>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <>
-              <Link to="/login" style={{
-                color: '#F8FAFC',
-                textDecoration: 'none',
-                padding: '10px 20px',
-                borderRadius: 'var(--radius)',
-                fontFamily: 'DM Sans, sans-serif',
-                fontWeight: '500',
-                transition: 'var(--transition-fast)'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.color = 'rgba(199, 210, 254, 1)';
-                e.target.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.color = '#F8FAFC';
-                e.target.style.transform = 'translateY(0)';
-              }}>
-                Login
-              </Link>
-              <Link to="/register" style={{
-                color: '#F8FAFC',
-                background: 'rgba(255, 255, 255, 0.15)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                textDecoration: 'none',
-                padding: '10px 20px',
-                borderRadius: 'var(--radius)',
-                fontFamily: 'DM Sans, sans-serif',
-                fontWeight: '600',
-                transition: 'var(--transition-fast)',
-                backdropFilter: 'blur(10px)'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = 'rgba(255, 255, 255, 0.25)';
-                e.target.style.transform = 'translateY(-1px)';
-                e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = 'rgba(255, 255, 255, 0.15)';
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = 'none';
-              }}>
-                Register
-              </Link>
-            </>
-          )}
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Unauthenticated State */}
+                <Link 
+                  to="/login" 
+                  className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition-colors"
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/register" 
+                  className="px-4 py-2 rounded-xl text-sm font-bold bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-colors backdrop-blur-md"
+                >
+                  Register
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

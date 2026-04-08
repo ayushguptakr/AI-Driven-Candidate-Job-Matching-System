@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'https://ai-driven-candidate-job-matching-system.onrender.com/api';
+const API_BASE = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://ai-driven-candidate-job-matching-system.onrender.com/api' : 'http://localhost:5000/api');
 
 export const jobAPI = {
   getAll: (page = 1, limit = 20, search = '') => 

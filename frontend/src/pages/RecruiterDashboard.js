@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AnimatedLogo from '../components/landing/AnimatedLogo';
+import LogoLink from '../components/ui/LogoLink';
 import JobForm from '../components/JobForm';
 import Button from '../components/ui/Button';
 
@@ -29,6 +30,7 @@ const RecruiterDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [loadingMatches, setLoadingMatches] = useState(false);
   const [statusMessage, setStatusMessage] = useState({ text: '', type: '' });
+  const [isFullInsightsOpen, setIsFullInsightsOpen] = useState(false);
   
   const [stats, setStats] = useState({
     totalJobs: 0,
@@ -163,149 +165,355 @@ const RecruiterDashboard = () => {
     return 'Detailed matching criteria based on resume vector parsing.';
   };
 
-  const AIInsightsPane = ({ candidate }) => {
-    if (!candidate) {
+  // Derive skill tags with status classification for the insight panel
+  const getSkillBreakdown = (candidate) => {
+    const matched = Array.isArray(candidate?.matchingSkills) ? candidate.matchingSkills : [];
+    const missing = getMissingSkills(candidate);
+    
+    // Build categorized tag list: strong, moderate, missing
+    const tags = [];
+    matched.forEach((skill, i) => {
+      // First 60% of matched skills = strong, rest = moderate
+      const status = i < Math.ceil(matched.length * 0.6) ? 'strong' : 'moderate';
+      tags.push({ skill, status });
+    });
+    missing.forEach(skill => {
+      tags.push({ skill, status: 'missing' });
+    });
+    // Return top 5 for the preview
+    return tags.slice(0, 5);
+  };
+
+  const getAISummary = (candidate) => {
+    const why = getWhyThisMatch(candidate);
+    const score = Number(candidate?.score || 0);
+    const matched = Array.isArray(candidate?.matchingSkills) ? candidate.matchingSkills : [];
+    const missing = getMissingSkills(candidate);
+
+    if (why && why !== 'Detailed matching criteria based on resume vector parsing.') {
+      return why;
+    }
+
+    // Generate a contextual summary
+    const scoreLabel = score >= 80 ? 'exceptional' : score >= 60 ? 'strong' : score >= 40 ? 'moderate' : 'developing';
+    const matchedStr = matched.length > 0 ? `Key strengths in ${matched.slice(0, 2).join(' and ')}.` : '';
+    const missingStr = missing.length > 0 ? `Growth areas include ${missing.slice(0, 2).join(' and ')}.` : '';
+    
+    return `This candidate shows ${scoreLabel} alignment with the role requirements. ${matchedStr} ${missingStr}`.trim();
+  };
+
+  const AIInsightsPreviewPane = ({ candidate }) => {
+    // 1. Empty / Loading State
+    if (!candidate || loadingMatches) {
       return (
-        <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-white/[0.02] border border-white/5 rounded-2xl">
-          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 text-slate-500">
-            <BrainCircuit size={32} />
+        <div className="h-full flex flex-col p-6 bg-gradient-to-b from-[#0a0520] to-[#030014] border border-white/5 rounded-2xl relative overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8 opacity-50">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <BrainCircuit size={16} className="text-purple-400" />
+                <span className="text-sm font-bold text-white tracking-wide">AI Copilot</span>
+                <span className="w-2 h-2 rounded-full bg-purple-500/50 animate-pulse" />
+              </div>
+              <p className="text-xs text-slate-500">Smart candidate insights</p>
+            </div>
           </div>
-          <h3 className="text-lg font-medium text-white mb-2">AI Insights Pending</h3>
-          <p className="text-sm text-slate-400 max-w-[250px]">Select a candidate from the middle pane to view their detailed AI match breakdown.</p>
+          
+          <div className="flex-1 flex flex-col items-center justify-center text-center">
+            {loadingMatches ? (
+              <>
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 bg-purple-500/20 blur-xl rounded-full animate-pulse" />
+                  <div className="w-12 h-12 rounded-full border-t-2 border-l-2 border-purple-500 border-r-2 border-r-transparent border-b-2 border-b-transparent animate-spin flex items-center justify-center relative z-10 bg-[#0a0520]">
+                    <div className="w-8 h-8 rounded-full border-b-2 border-r-2 border-indigo-500 border-t-2 border-t-transparent border-l-2 border-l-transparent animate-spin-reverse" />
+                  </div>
+                </div>
+                <h3 className="text-white font-medium mb-2 animate-pulse">Analyzing candidate profile...</h3>
+                <p className="text-xs text-slate-500">Extracting semantic vector data</p>
+              </>
+            ) : (
+              <>
+                <div className="w-16 h-16 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-center mb-6 shadow-inner">
+                  <BrainCircuit size={28} className="text-slate-600" />
+                </div>
+                <h3 className="text-white font-medium mb-2">Ready to Assist</h3>
+                <p className="text-xs text-slate-400 max-w-[200px] mb-6">Select a candidate from the pipeline to see AI-generated insights</p>
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={() => { if (selectedJob && !loadingMatches) runMatching(); }}
+                  disabled={!selectedJob}
+                  className="rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 hover:bg-purple-500/20"
+                >
+                  <Sparkles size={14} className="mr-2" /> Run Analysis
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       );
     }
     
-    // Find application status if exists
+    // Derived Data
+    const score = Number(candidate.score || 0);
+    const skillTags = getSkillBreakdown(candidate).slice(0, 5); // 4-6 key skills
     const appRecord = applications.find(a => a.resumeId?._id === candidate.resumeId?._id || a.userId?._id === candidate.resumeId?.userId);
     
-    const score = Number(candidate.score || 0);
-    const missingSkills = getMissingSkills(candidate);
-    const matchedSkills = Array.isArray(candidate.matchingSkills) ? candidate.matchingSkills : [];
+    // Generate natural language chat message
+    let aiMessage = getAISummary(candidate);
     
-    const skillsMatchedCount = matchedSkills.length;
-    const skillsTotal = Math.max(skillsMatchedCount + missingSkills.length, 1);
-    const skillsPct = Math.round((skillsMatchedCount / skillsTotal) * 100);
-    const expPct = Math.min(95, Math.max(45, Math.round(score * 0.92)));
+    const scoreStyle = score >= 80 ? {bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20'} 
+                     : score >= 60 ? {bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20'} 
+                     : {bg: 'bg-slate-500/10', text: 'text-slate-400', border: 'border-slate-500/20'};
 
     return (
-      <div className="h-full flex flex-col bg-gradient-to-b from-[#0a0520] to-[#030014] border border-white/10 rounded-2xl overflow-hidden relative">
-        <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-          <BrainCircuit size={140} />
+      <div className="h-full rounded-2xl border border-white/10 bg-gradient-to-b from-[#0e0725] to-[#030014] flex flex-col p-5 relative overflow-y-auto animate-aiPaneFadeIn shadow-2xl">
+        {/* Ambient Top Glow */}
+        <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-purple-500/10 to-transparent blur-2xl pointer-events-none" />
+        
+        {/* 1. Header */}
+        <div className="flex items-start justify-between mb-6 relative z-10">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <BrainCircuit size={16} className="text-purple-400" />
+              <span className="text-sm font-bold text-white tracking-wide">AI Copilot</span>
+              <span className="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)] animate-pulse" />
+            </div>
+            <p className="text-xs text-slate-400">Smart candidate insights</p>
+          </div>
+          <button 
+            onClick={() => setIsFullInsightsOpen(true)}
+            title="View detailed AI analysis"
+            className="text-slate-400 hover:text-white transition-all p-1.5 rounded-lg bg-white/[0.03] hover:bg-white/10 hover:scale-110"
+          >
+            <Info size={16} />
+          </button>
         </div>
         
-        {/* Header */}
-        <div className="p-6 border-b border-white/5 relative z-10">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h2 className="text-xl font-bold text-white mb-1">{candidate.resumeId?.candidateName || 'Candidate'}</h2>
-              <p className="text-sm text-slate-400 flex items-center gap-2">
-                {candidate.resumeId?.email || 'No email provided'}
-              </p>
-            </div>
-            <div className={`px-4 py-2 rounded-xl border flex flex-col items-center ${getScoreColor(score)}`}>
-              <span className="text-xl font-black">{score}%</span>
-              <span className="text-[10px] uppercase font-bold tracking-wider opacity-80">Match</span>
-            </div>
+        {/* 2. Candidate Summary Section */}
+        <div className="flex items-center justify-between mb-6 p-4 rounded-xl bg-white/[0.02] border border-white/5 animate-fade-in-up" style={{ animationFillMode: 'both' }}>
+          <div className="min-w-0 pr-4">
+            <h2 className="text-base font-bold text-white truncate" title={candidate.resumeId?.candidateName || 'Candidate'}>
+              {candidate.resumeId?.candidateName || 'Candidate'}
+            </h2>
+            <p className="text-xs text-slate-500 truncate mt-0.5">{candidate.resumeId?.email || 'Candidate profile'}</p>
           </div>
-          
-          <div className="flex items-center justify-between mt-6">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Status:</span>
-              {appRecord ? (
-                <select 
-                  value={appRecord.status}
-                  onChange={(e) => handleUpdateApplicationStatus(appRecord._id, e.target.value)}
-                  className="bg-white/5 border border-white/10 rounded-lg text-sm text-white px-3 py-1 outline-none focus:border-purple-500"
-                >
-                  <option value="pending" className="bg-[#0a0520]">Pending</option>
-                  <option value="reviewed" className="bg-[#0a0520]">Reviewed</option>
-                  <option value="shortlisted" className="bg-[#0a0520]">Shortlisted</option>
-                  <option value="rejected" className="bg-[#0a0520]">Rejected</option>
-                </select>
-              ) : (
-                <span className="px-3 py-1 rounded-lg bg-white/5 text-slate-400 text-sm">Not Applied</span>
-              )}
+          <div className={`shrink-0 px-3 py-1.5 rounded-full border flex items-center gap-1.5 ${scoreStyle.bg} ${scoreStyle.border}`}>
+            <Target size={12} className={scoreStyle.text} />
+            <span className={`font-bold text-sm ${scoreStyle.text}`}>{score}% Match</span>
+          </div>
+        </div>
+
+        {/* 3. AI Insight Message (Chat Bubble) */}
+        <div className="mb-6 relative z-10 animate-fade-in-up" style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+          <div className="flex gap-3 relative">
+            <div className="shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+              <Sparkles size={14} className="text-white" />
+            </div>
+            
+            <div className="flex-1 relative">
+              <div className="absolute -left-2 top-3 w-3 h-3 bg-[#130b30] rotate-45 border-l border-b border-purple-500/30" />
+              <div className="p-4 rounded-2xl rounded-tl-none bg-[#130b30] border border-purple-500/30 shadow-[0_4px_20px_rgba(139,92,246,0.1)]">
+                <p className="text-[13px] text-slate-200 leading-relaxed">
+                  {aiMessage}
+                </p>
+                
+                {/* 5. Smart Suggestions (Chips) */}
+                <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-purple-500/10">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 w-full mb-1">Recommended Actions</span>
+                  {score >= 80 ? (
+                    <button onClick={() => appRecord && handleUpdateApplicationStatus(appRecord._id, 'shortlisted')} className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium hover:bg-emerald-500/20 transition-colors">
+                      ✨ Move to Shortlist
+                    </button>
+                  ) : score >= 50 ? (
+                    <button className="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-medium hover:bg-amber-500/20 transition-colors">
+                      🤔 Consider with interview
+                    </button>
+                  ) : (
+                    <button onClick={() => appRecord && handleUpdateApplicationStatus(appRecord._id, 'rejected')} className="px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium hover:bg-red-500/20 transition-colors">
+                      📉 Reject candidate
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-8 relative z-10">
-          
-          {/* Why this match */}
-          <div>
-            <h3 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider flex items-center gap-2">
-              <Sparkles size={16} className="text-purple-400" /> AI Verdict
-            </h3>
-            <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-100 text-sm leading-relaxed">
-              {getWhyThisMatch(candidate)}
-            </div>
+        {/* 4. Skill Highlights */}
+        <div className="mb-6 flex-1 animate-fade-in-up" style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
+          <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">Key Skill Triggers</h4>
+          <div className="flex flex-wrap gap-2">
+            {skillTags.length > 0 ? skillTags.map((tag, i) => {
+              const isStrong = tag.status === 'strong';
+              const isMod = tag.status === 'moderate';
+              return (
+                <div key={i} className={`px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all hover:-translate-y-0.5 ${
+                  isStrong ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.1)]' : 
+                  isMod ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' :
+                  'bg-red-500/5 border-red-500/20 text-red-300 line-through decoration-red-500/50 opacity-70'
+                }`}>
+                  {tag.skill}
+                </div>
+              );
+             }) : (
+               <span className="text-xs text-slate-500">Data parsing required.</span>
+             )}
           </div>
+        </div>
 
-          {/* Breakdown Bars */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Detailed Breakdown</h3>
-            
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-slate-300">Skills Alignment</span>
-                <span className="text-sm font-bold text-white">{skillsPct}%</span>
-              </div>
-              <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${skillsPct}%` }} />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-slate-300">Experience Alignment</span>
-                <span className="text-sm font-bold text-white">{expPct}%</span>
-              </div>
-              <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-purple-500 rounded-full" style={{ width: `${expPct}%` }} />
-              </div>
-            </div>
-          </div>
-
-          {/* Skills Lists */}
-          <div className="grid grid-cols-1 gap-6">
-            <div>
-              <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                <CheckCircle size={16} className="text-emerald-400" /> Matched Skills
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {matchedSkills.length > 0 ? matchedSkills.map((skill, i) => (
-                  <span key={i} className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-xs text-slate-300">
-                    {skill}
-                  </span>
-                )) : (
-                  <span className="text-sm text-slate-500">No specific matched skills extracted.</span>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                <AlertCircle size={16} className="text-amber-400" /> Missing Skills
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {missingSkills.length > 0 ? missingSkills.map((skill, i) => (
-                  <span key={i} className="px-2.5 py-1 rounded-md bg-red-500/10 border border-red-500/20 text-xs text-red-400">
-                    {skill}
-                  </span>
-                )) : (
-                  <span className="text-sm text-slate-500">No missing skills detected.</span>
-                )}
-              </div>
-            </div>
-          </div>
-
+        {/* 6. Quick Actions */}
+        <div className="mt-auto grid grid-cols-2 gap-3 pt-4 border-t border-white/10 animate-fade-in-up" style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+          <button 
+            onClick={() => setIsFullInsightsOpen(true)}
+            className="col-span-2 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 hover:from-indigo-500/30 hover:to-purple-500/30 border border-purple-500/30 text-purple-300 font-semibold text-sm transition-all shadow-[0_0_15px_rgba(139,92,246,0.1)] group"
+          >
+            <BrainCircuit size={16} className="group-hover:scale-110 transition-transform" />
+            View Full Analysis
+          </button>
         </div>
       </div>
     );
   };
 
+  const AIInsightsFullModal = ({ candidate, onClose }) => {
+    const score = Number(candidate.score || 0);
+    const missingSkills = getMissingSkills(candidate);
+    const matchedSkills = Array.isArray(candidate.matchingSkills) ? candidate.matchingSkills : [];
+    const skillTags = getSkillBreakdown(candidate);
+    const aiSummary = getAISummary(candidate);
+
+    const scoreGlow = score >= 80 ? 'rgba(52,211,153,0.25)' : score >= 60 ? 'rgba(251,191,36,0.2)' : 'rgba(148,163,184,0.1)';
+    const scoreRingColor = score >= 80 ? '#34d399' : score >= 60 ? '#fbbf24' : '#64748b';
+
+    const tagStyles = {
+      strong: { bg: 'rgba(52,211,153,0.1)', border: 'rgba(52,211,153,0.25)', color: '#6ee7b7', dotColor: '#34d399', label: 'Strong' },
+      moderate: { bg: 'rgba(251,191,36,0.08)', border: 'rgba(251,191,36,0.2)', color: '#fcd34d', dotColor: '#fbbf24', label: 'Moderate' },
+      missing: { bg: 'rgba(248,113,113,0.08)', border: 'rgba(248,113,113,0.2)', color: '#fca5a5', dotColor: '#f87171', label: 'Missing' },
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <button 
+          onClick={onClose}
+          className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+        >
+          <X size={24} />
+        </button>
+
+        <div className="w-full max-w-[500px] h-[85vh] sm:h-auto sm:max-h-[85vh] bg-gradient-to-b from-[#0a0520] to-[#030014] rounded-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col relative animate-scale-in">
+          
+          {/* Gradient border */}
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: '1rem', padding: '1px',
+            background: 'linear-gradient(180deg, rgba(139,92,246,0.4), rgba(99,102,241,0.1), rgba(139,92,246,0.2))',
+            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            WebkitMaskComposite: 'xor',
+            pointerEvents: 'none',
+          }} />
+
+          {/* Ambient glow behind score */}
+          <div style={{
+            position: 'absolute', top: -40, right: -40, width: 200, height: 200,
+            borderRadius: '50%', background: `radial-gradient(circle, ${scoreGlow} 0%, transparent 70%)`,
+            pointerEvents: 'none', filter: 'blur(40px)',
+          }} />
+
+          {/* Header */}
+          <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', position: 'relative', zIndex: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <BrainCircuit size={18} style={{ color: '#a78bfa' }} />
+              <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#a78bfa' }}>
+                Full AI Match Analysis
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {candidate.resumeId?.candidateName || 'Candidate'}
+                </h2>
+                <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>
+                  {candidate.resumeId?.email || 'No email provided'}
+                </p>
+              </div>
+
+              {/* Radial Score */}
+              <div style={{ position: 'relative', width: 72, height: 72, flexShrink: 0 }}>
+                <svg width="72" height="72" viewBox="0 0 72 72" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
+                  <circle cx="36" cy="36" r="30" fill="none" stroke={scoreRingColor} strokeWidth="4"
+                    strokeDasharray={`${(score / 100) * 188.5} 188.5`} strokeLinecap="round"
+                    style={{ transition: 'stroke-dasharray 1s ease-out', filter: `drop-shadow(0 0 6px ${scoreRingColor})` }}
+                  />
+                </svg>
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 20, fontWeight: 900, color: '#fff', lineHeight: 1 }}>{score}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Scrollable Flow */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <div>
+              <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#e2e8f0', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Target size={14} style={{ color: '#818cf8' }} /> Complete Skill Breakdown
+              </h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {skillTags.length > 0 ? skillTags.concat(skillTags.length > 0 ? [] : []).map((tag, i) => {
+                  const s = tagStyles[tag.status];
+                  return (
+                    <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, background: s.bg, border: `1px solid ${s.border}` }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: s.dotColor, boxShadow: `0 0 6px ${s.dotColor}` }} />
+                      <span style={{ fontSize: 12, fontWeight: 600, color: s.color }}>{tag.skill}</span>
+                    </div>
+                  );
+                }) : (
+                  <span className="text-sm text-slate-500">No skill data available.</span>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#e2e8f0', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Sparkles size={14} style={{ color: '#a78bfa' }} /> Detailed AI Reasoning
+              </h3>
+              <div style={{ padding: '16px', borderRadius: 12, background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(99,102,241,0.05))', border: '1px solid rgba(139,92,246,0.15)' }}>
+                <p style={{ fontSize: 13, lineHeight: 1.7, color: 'rgba(196,181,253,0.9)', margin: 0 }}>{aiSummary}</p>
+              </div>
+            </div>
+
+            <div>
+              <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#e2e8f0', marginBottom: 14 }}>Alignment Metrics</h3>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: '#cbd5e1' }}>Skills Alignment</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>{Math.round((matchedSkills.length / Math.max(matchedSkills.length + missingSkills.length, 1)) * 100)}%</span>
+                </div>
+                <div style={{ height: 6, width: '100%', background: 'rgba(255,255,255,0.04)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', borderRadius: 3, background: 'linear-gradient(90deg, #818cf8, #a78bfa)', width: `${Math.round((matchedSkills.length / Math.max(matchedSkills.length + missingSkills.length, 1)) * 100)}%`, boxShadow: '0 0 8px rgba(129,140,248,0.3)' }} />
+                </div>
+              </div>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: '#cbd5e1' }}>Experience Alignment</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>{Math.min(95, Math.max(45, Math.round(score * 0.92)))}%</span>
+                </div>
+                <div style={{ height: 6, width: '100%', background: 'rgba(255,255,255,0.04)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', borderRadius: 3, background: 'linear-gradient(90deg, #a855f7, #c084fc)', width: `${Math.min(95, Math.max(45, Math.round(score * 0.92)))}%`, boxShadow: '0 0 8px rgba(168,85,247,0.3)' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-4 border-t border-white/5 relative z-10 flex justify-end">
+            <Button variant="secondary" onClick={onClose}>Close Analysis</Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="landing-page min-h-screen bg-[#030014] text-slate-300 font-sans flex overflow-hidden">
       
@@ -317,10 +525,7 @@ const RecruiterDashboard = () => {
       {/* ── Sidebar ── */}
       <aside className={`fixed lg:static inset-y-0 left-0 w-64 bg-white/[0.02] border-r border-white/10 z-50 transform transition-transform duration-300 ease-out flex flex-col ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="p-6 flex items-center justify-between border-b border-white/5">
-          <Link to="/" className="flex items-center gap-2.5 no-underline">
-            <AnimatedLogo size={28} />
-            <span className="text-white font-bold text-lg tracking-tight">TalentMatch AI</span>
-          </Link>
+          <LogoLink size={28} className="gap-2.5" />
           <button className="lg:hidden text-slate-400 hover:text-white" onClick={() => setIsSidebarOpen(false)}>
             <X size={20} />
           </button>
@@ -370,10 +575,10 @@ const RecruiterDashboard = () => {
       </aside>
 
       {/* ── Main Dashboard Area ── */}
-      <main className="flex-1 flex flex-col relative h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col relative min-h-screen">
         
         {/* Top Header */}
-        <header className="flex flex-col sm:flex-row sm:items-center justify-between p-6 border-b border-white/10 bg-white/[0.02] z-30 shrink-0">
+        <header className="sticky top-0 flex flex-col sm:flex-row sm:items-center justify-between p-6 border-b border-white/10 bg-[#030014]/95 backdrop-blur z-30 shrink-0">
           <div className="flex items-center gap-4 mb-4 sm:mb-0">
             <button className="lg:hidden text-slate-300 hover:text-white" onClick={() => setIsSidebarOpen(true)}>
               <Menu size={24} />
@@ -419,7 +624,7 @@ const RecruiterDashboard = () => {
         )}
 
         {/* Scrollable Layout */}
-        <div className="flex-1 overflow-hidden p-6">
+        <div className="flex-1 flex flex-col p-6">
           
           {/* Stats Bar */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 shrink-0">
@@ -442,10 +647,10 @@ const RecruiterDashboard = () => {
           </div>
 
           {/* Tri-Pane Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100%-100px)]">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
             
             {/* PANE A: Jobs List */}
-            <div className="flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden h-full">
+            <div className="flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl h-full">
               <div className="p-4 border-b border-white/5 bg-white/[0.01]">
                 <h2 className="font-bold text-white flex items-center gap-2">
                   <BriefcaseBusiness size={18} className="text-indigo-400" /> My Jobs
@@ -482,7 +687,7 @@ const RecruiterDashboard = () => {
             </div>
 
             {/* PANE B: Candidates / Matches */}
-            <div className="flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden h-full">
+            <div className="flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl h-full">
               <div className="p-4 border-b border-white/5 bg-white/[0.01] flex justify-between items-center">
                 <h2 className="font-bold text-white flex items-center gap-2">
                   <Users size={18} className="text-purple-400" /> Candidate Pipeline
@@ -582,27 +787,22 @@ const RecruiterDashboard = () => {
 
             {/* PANE C: AI Insights */}
             <div className="h-full hidden lg:block">
-              <AIInsightsPane candidate={selectedCandidate} />
+              <AIInsightsPreviewPane candidate={selectedCandidate} />
             </div>
 
-            {/* Mobile Fallback for AI Insights (Modal) */}
-            {selectedCandidate && (
-              <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 lg:hidden flex flex-col pt-16 pb-6 px-4">
-                <button 
-                  onClick={() => setSelectedCandidate(null)}
-                  className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white"
-                >
-                  <X size={20} />
-                </button>
-                <div className="flex-1 bg-[#0a0520] rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
-                  <AIInsightsPane candidate={selectedCandidate} />
-                </div>
-              </div>
-            )}
+            
 
           </div>
         </div>
       </main>
+
+      {/* Full AI Insights Modal */}
+      {isFullInsightsOpen && selectedCandidate && (
+        <AIInsightsFullModal 
+          candidate={selectedCandidate} 
+          onClose={() => setIsFullInsightsOpen(false)} 
+        />
+      )}
 
       {/* Post Job Modal */}
       {isPostJobOpen && (

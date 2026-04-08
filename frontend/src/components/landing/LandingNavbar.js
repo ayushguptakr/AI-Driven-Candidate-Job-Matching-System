@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Link from '../ui/Link';
-import AnimatedLogo from './AnimatedLogo';
+import LogoLink from '../ui/LogoLink';
 import Button from '../ui/Button';
 
 const navLinks = [
@@ -12,6 +13,7 @@ const navLinks = [
 ];
 
 const LandingNavbar = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -57,12 +59,7 @@ const LandingNavbar = () => {
         <div className="w-full max-w-7xl mx-auto px-6 sm:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* ── Logo ── */}
-            <Link to="/" variant="unstyled" className="flex items-center gap-2.5 group">
-              <AnimatedLogo size={32} />
-              <span className="text-white font-bold text-lg tracking-tight group-hover:text-purple-200 transition-colors">
-                TalentMatch AI
-              </span>
-            </Link>
+            <LogoLink />
 
             {/* ── Desktop Nav Links ── */}
             <div className="landing-desktop-only items-center gap-1">

@@ -5,6 +5,7 @@ const matchSchema = new mongoose.Schema({
   resumeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Resume', required: true },
   score: { type: Number, required: true },
   matchingSkills: [String],
+  missingSkills: [String],
   feedback: { type: String },
   createdAt: { type: Date, default: Date.now }
 });

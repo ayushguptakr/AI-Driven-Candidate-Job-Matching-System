@@ -45,16 +45,16 @@ const AnimatedLogo = ({ size = 48, className = '' }) => {
 
             .track-line {
               stroke: url(#lineGrad);
-              stroke-width: 1.5;
-              opacity: 0.4;
+              stroke-width: 2.5;
+              opacity: 0.6;
               transition: all 0.5s ease;
             }
 
             /* Hover Executions */
             .group:hover .track-line,
             .ai-strict-svg:hover .track-line {
-              opacity: 0.85;
-              stroke-width: 2;
+              opacity: 1;
+              stroke-width: 3.5;
             }
 
             .group:hover .center-node,
@@ -96,31 +96,31 @@ const AnimatedLogo = ({ size = 48, className = '' }) => {
         <line x1="20" y1="50" x2="80" y2="50" className="track-line" strokeLinecap="round" />
 
         {/* Center Node Outer Ring (Abstract processing bounds) */}
-        <circle cx="50" cy="50" r="14" fill="none" stroke="#7C3AED" strokeWidth="0.8" opacity="0.3" strokeDasharray="3 4">
+        <circle cx="50" cy="50" r="16" fill="none" stroke="#7C3AED" strokeWidth="1.2" opacity="0.4" strokeDasharray="3 4">
           <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="20s" repeatCount="indefinite" />
         </circle>
-        <circle cx="50" cy="50" r="10" fill="none" stroke="#A78BFA" strokeWidth="0.5" opacity="0.15" />
+        <circle cx="50" cy="50" r="12" fill="none" stroke="#A78BFA" strokeWidth="0.8" opacity="0.2" />
 
         {/* Data Transmission Particle */}
-        <circle r="2" fill="#FFFFFF" filter="drop-shadow(0 0 2px #fff)">
+        <circle r="2.5" fill="#FFFFFF" filter="drop-shadow(0 0 3px #fff)">
           <animateMotion dur="3.5s" repeatCount="indefinite" begin="0s">
             <mpath href="#dataTrack" />
           </animateMotion>
           <animate attributeName="opacity" values="0;1;1;1;0" keyTimes="0;0.2;0.5;0.8;1" dur="3.5s" repeatCount="indefinite" begin="0s" />
           {/* Subtle scaling of the packet as it hits the center AI */}
-          <animate attributeName="r" values="1.5;3;1.5" keyTimes="0;0.5;1" dur="3.5s" repeatCount="indefinite" begin="0s" />
+          <animate attributeName="r" values="2;3.5;2" keyTimes="0;0.5;1" dur="3.5s" repeatCount="indefinite" begin="0s" />
         </circle>
 
         {/* Extracted Entity Nodes */}
         {/* Candidate Node (Left) */}
-        <circle cx="20" cy="50" r="5" className="base-node node-l" />
+        <circle cx="20" cy="50" r="6" className="base-node node-l" />
         
         {/* Job Node (Right) */}
-        <circle cx="80" cy="50" r="5" className="base-node node-r" />
+        <circle cx="80" cy="50" r="6" className="base-node node-r" />
 
         {/* The AI Match Node (Center) */}
-        <circle cx="50" cy="50" r="7" className="center-node" />
-        <circle cx="50" cy="50" r="2.5" fill="#FFFFFF" opacity="0.8" />
+        <circle cx="50" cy="50" r="8.5" className="center-node" />
+        <circle cx="50" cy="50" r="3" fill="#FFFFFF" opacity="0.85" />
         
       </svg>
     </div>

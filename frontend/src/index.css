@@ -209,3 +209,66 @@
     display: flex !important;
   }
 }
+
+/* ═══ AI Insights Panel Animations ═══ */
+@keyframes aiPaneFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes aiOrbitPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.5;
+  }
+}
+
+@keyframes aiBrainFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes aiTagFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* AI Insights panel scrollbar */
+.ai-insights-populated::-webkit-scrollbar,
+.ai-insights-populated *::-webkit-scrollbar {
+  width: 4px;
+}
+.ai-insights-populated::-webkit-scrollbar-track,
+.ai-insights-populated *::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ai-insights-populated::-webkit-scrollbar-thumb,
+.ai-insights-populated *::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.2);
+  border-radius: 2px;
+}
+.ai-insights-populated::-webkit-scrollbar-thumb:hover,
+.ai-insights-populated *::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.4);
+}
+

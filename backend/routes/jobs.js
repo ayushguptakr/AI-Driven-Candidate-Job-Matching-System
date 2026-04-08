@@ -2,7 +2,7 @@ const express = require('express');
 const Job = require('../models/Job');
 const Resume = require('../models/Resume');
 const Match = require('../models/Match');
-const { analyzeMatch } = require('../services/claudeService');
+const { analyzeMatch } = require('../services/groqService');
 const { auth, checkRole } = require('../middleware/auth');
 
 const router = express.Router();
@@ -77,7 +77,7 @@ router.get('/:jobId/matches', auth, checkRole('recruiter'), async (req, res) => 
   }
 });
 
-// Match job with all resumes (Recruiter only) — with deduplication
+// Match job with all resumes (Recruiter only) — sequential with rate-limit pacing
 router.post('/:jobId/match', auth, checkRole('recruiter'), async (req, res) => {
   try {
     const job = await Job.findById(req.params.jobId);
@@ -93,27 +93,35 @@ router.post('/:jobId/match', auth, checkRole('recruiter'), async (req, res) => {
     // Delete previous matches for this job to avoid duplicates
     await Match.deleteMany({ jobId: job._id });
     
-    const matchPromises = resumes.map(async (resume) => {
-      const analysis = await analyzeMatch(
-        `${job.title} ${job.description} ${job.requirements}`,
-        resume.content
-      );
-      
-      const match = new Match({
-        jobId: job._id,
-        resumeId: resume._id,
-        score: analysis.score,
-        matchingSkills: analysis.matchingSkills
-      });
-      
-      await match.save();
-      return match;
-    });
-
-    const results = await Promise.allSettled(matchPromises);
-    const matches = results
-      .filter(r => r.status === 'fulfilled')
-      .map(r => r.value);
+    // Process resumes sequentially with delay to respect Gemini rate limits
+    const matches = [];
+    for (let i = 0; i < resumes.length; i++) {
+      try {
+        const analysis = await analyzeMatch(
+          `${job.title} ${job.description} ${job.requirements}`,
+          resumes[i].content
+        );
+        
+        const match = new Match({
+          jobId: job._id,
+          resumeId: resumes[i]._id,
+          score: analysis.score,
+          matchingSkills: analysis.matchingSkills,
+          missingSkills: analysis.missingSkills
+        });
+        
+        await match.save();
+        matches.push(match);
+        
+        // Pace requests: wait 2s between calls to stay under free-tier rate limit
+        if (i < resumes.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      } catch (err) {
+        console.error(`Match failed for resume ${resumes[i]._id}:`, err.message);
+        // Continue with next resume instead of failing the whole batch
+      }
+    }
     
     res.json(matches);
   } catch (error) {

@@ -94,6 +94,10 @@ const Profile = () => {
     return <Navigate to="/login" replace />;
   }
 
+  const inputClasses = "w-full bg-[#0a0520] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all font-sans";
+  const labelClasses = "text-sm font-semibold text-slate-300 drop-shadow-md";
+  const buttonClasses = "px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed min-w-[150px] shadow-lg shadow-purple-500/20";
+
   return (
     <div className="min-h-screen bg-[#030014] text-slate-300 font-sans py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -128,57 +132,40 @@ const Profile = () => {
 
         {/* Messages */}
         {successMessage && (
-          <div style={{
-            padding: '16px',
-            borderRadius: 'var(--radius)',
-            marginBottom: 'var(--spacing-md)',
-            backgroundColor: '#f0fdf4',
-            color: 'var(--success)',
-            border: '1px solid #bbf7d0',
-            fontFamily: 'DM Sans, sans-serif'
-          }}>
+          <div className="mb-8 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium">
             {successMessage}
           </div>
         )}
-
         {errorMessage && (
-          <div style={{
-            padding: '16px',
-            borderRadius: 'var(--radius)',
-            marginBottom: 'var(--spacing-md)',
-            backgroundColor: '#fee2e2',
-            color: 'var(--danger)',
-            border: '1px solid #fecaca',
-            fontFamily: 'DM Sans, sans-serif'
-          }}>
+          <div className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-medium">
             {errorMessage}
           </div>
         )}
 
         {/* Profile Tab */}
         {activeTab === 'profile' && (
-          <div className="card-custom">
-            <div className="card-header-custom">
-              <h3 className="section-title" style={{ margin: 0, padding: 0 }}>Personal Information</h3>
+          <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden mb-8">
+            <div className="p-6 border-b border-white/5 bg-white/[0.01]">
+              <h3 className="text-lg font-bold text-white m-0">Personal Information</h3>
             </div>
-            <div className="card-body-custom">
+            <div className="p-6">
               <form onSubmit={handleProfileSubmit}>
-                <div className="grid-2" style={{ marginBottom: 'var(--spacing-md)' }}>
-                  <div className="form-group-custom">
-                    <label className="form-label">Full Name</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div className="flex flex-col gap-2">
+                    <label className={labelClasses}>Full Name</label>
                     <input
                       type="text"
-                      className="form-control-custom"
+                      className={inputClasses}
                       value={profileData.name}
                       onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                       required
                     />
                   </div>
-                  <div className="form-group-custom">
-                    <label className="form-label">Email</label>
+                  <div className="flex flex-col gap-2">
+                    <label className={labelClasses}>Email</label>
                     <input
                       type="email"
-                      className="form-control-custom"
+                      className={inputClasses}
                       value={profileData.email}
                       onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
                       required
@@ -186,22 +173,22 @@ const Profile = () => {
                   </div>
                 </div>
 
-                <div className="grid-2" style={{ marginBottom: 'var(--spacing-md)' }}>
-                  <div className="form-group-custom">
-                    <label className="form-label">Phone</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div className="flex flex-col gap-2">
+                    <label className={labelClasses}>Phone</label>
                     <input
                       type="tel"
-                      className="form-control-custom"
+                      className={inputClasses}
                       value={profileData.phone}
                       onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                       placeholder="+1 (555) 000-0000"
                     />
                   </div>
-                  <div className="form-group-custom">
-                    <label className="form-label">Location</label>
+                  <div className="flex flex-col gap-2">
+                    <label className={labelClasses}>Location</label>
                     <input
                       type="text"
-                      className="form-control-custom"
+                      className={inputClasses}
                       value={profileData.location}
                       onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
                       placeholder="City, Country"
@@ -210,11 +197,11 @@ const Profile = () => {
                 </div>
 
                 {profileData.role === 'recruiter' && (
-                  <div className="form-group-custom" style={{ marginBottom: 'var(--spacing-md)' }}>
-                    <label className="form-label">Company</label>
+                  <div className="flex flex-col gap-2 mb-6">
+                    <label className={labelClasses}>Company</label>
                     <input
                       type="text"
-                      className="form-control-custom"
+                      className={inputClasses}
                       value={profileData.company}
                       onChange={(e) => setProfileData({ ...profileData, company: e.target.value })}
                       placeholder="Your company name"
@@ -222,10 +209,10 @@ const Profile = () => {
                   </div>
                 )}
 
-                <div className="form-group-custom" style={{ marginBottom: 'var(--spacing-md)' }}>
-                  <label className="form-label">Bio</label>
+                <div className="flex flex-col gap-2 mb-6">
+                  <label className={labelClasses}>Bio</label>
                   <textarea
-                    className="form-control-custom"
+                    className={inputClasses}
                     value={profileData.bio}
                     onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                     rows="4"
@@ -234,25 +221,23 @@ const Profile = () => {
                   />
                 </div>
 
-                <div className="form-group-custom" style={{ marginBottom: 'var(--spacing-md)' }}>
-                  <label className="form-label">Role</label>
+                <div className="flex flex-col gap-2 mb-8">
+                  <label className={labelClasses}>Role</label>
                   <input
                     type="text"
-                    className="form-control-custom"
+                    className={`${inputClasses} opacity-60 cursor-not-allowed`}
                     value={profileData.role === 'recruiter' ? "Recruiter" : "Candidate"}
                     disabled
-                    style={{ opacity: 0.6, cursor: 'not-allowed' }}
                   />
-                  <small style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
+                  <small className="text-slate-500 text-xs mt-1">
                     Role is set at registration and cannot be changed.
                   </small>
                 </div>
 
                 <button
                   type="submit"
-                  className="btn-primary-custom"
+                  className={buttonClasses}
                   disabled={loading}
-                  style={{ minWidth: '150px' }}
                 >
                   {loading ? 'Saving…' : 'Save Changes'}
                 </button>
@@ -263,40 +248,40 @@ const Profile = () => {
 
         {/* Password Tab */}
         {activeTab === 'password' && (
-          <div className="card-custom">
-            <div className="card-header-custom">
-              <h3 className="section-title" style={{ margin: 0, padding: 0 }}>Change Password</h3>
+          <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden mb-8">
+            <div className="p-6 border-b border-white/5 bg-white/[0.01]">
+              <h3 className="text-lg font-bold text-white m-0">Change Password</h3>
             </div>
-            <div className="card-body-custom">
+            <div className="p-6">
               <form onSubmit={handlePasswordSubmit}>
-                <div className="form-group-custom">
-                  <label className="form-label">Current Password</label>
+                <div className="flex flex-col gap-2 mb-6">
+                  <label className={labelClasses}>Current Password</label>
                   <input
                     type="password"
-                    className="form-control-custom"
+                    className={inputClasses}
                     value={passwordData.currentPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                     required
                   />
                 </div>
 
-                <div className="grid-2" style={{ marginBottom: 'var(--spacing-md)' }}>
-                  <div className="form-group-custom">
-                    <label className="form-label">New Password</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="flex flex-col gap-2">
+                    <label className={labelClasses}>New Password</label>
                     <input
                       type="password"
-                      className="form-control-custom"
+                      className={inputClasses}
                       value={passwordData.newPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                       required
                       minLength={6}
                     />
                   </div>
-                  <div className="form-group-custom">
-                    <label className="form-label">Confirm New Password</label>
+                  <div className="flex flex-col gap-2">
+                    <label className={labelClasses}>Confirm New Password</label>
                     <input
                       type="password"
-                      className="form-control-custom"
+                      className={inputClasses}
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                       required
@@ -307,9 +292,8 @@ const Profile = () => {
 
                 <button
                   type="submit"
-                  className="btn-primary-custom"
+                  className={buttonClasses}
                   disabled={loading}
-                  style={{ minWidth: '150px' }}
                 >
                   {loading ? 'Changing…' : 'Change Password'}
                 </button>
