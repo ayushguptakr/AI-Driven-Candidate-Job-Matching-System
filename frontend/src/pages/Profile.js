@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 const Profile = () => {
   const { user, updateProfile, changePassword, refreshUser } = useAuth();
@@ -52,9 +52,6 @@ const Profile = () => {
       await updateProfile(profileData);
       await refreshUser();
       setSuccessMessage('Profile updated successfully.');
-      localStorage.setItem('selectedRole', profileData.role);
-      // Optionally redirect to the appropriate dashboard after role change
-      // navigate(profileData.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       setErrorMessage(error.message);
@@ -94,56 +91,36 @@ const Profile = () => {
   };
 
   if (!user) {
-    navigate('/login');
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-secondary)', minHeight: '100vh', paddingTop: 'var(--spacing-lg)', paddingBottom: 'var(--spacing-xl)' }}>
-      <div className="main-container">
-        <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-          <h1 className="page-title">Profile Settings</h1>
-          <p className="page-subtitle">Manage your account settings and preferences</p>
+    <div className="min-h-screen bg-[#030014] text-slate-300 font-sans py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-10">
+          <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2">Profile Settings</h1>
+          <p className="text-sm text-slate-400">Manage your account settings and preferences</p>
         </div>
 
         {/* Tabs */}
-        <div style={{
-          display: 'flex',
-          gap: '8px',
-          marginBottom: 'var(--spacing-lg)',
-          borderBottom: '2px solid var(--border-light)'
-        }}>
+        <div className="flex gap-2 mb-8 border-b border-white/10">
           <button
             onClick={() => setActiveTab('profile')}
-            style={{
-              padding: '12px 24px',
-              background: activeTab === 'profile' ? 'var(--primary)' : 'transparent',
-              color: activeTab === 'profile' ? 'white' : 'var(--text-secondary)',
-              border: 'none',
-              borderBottom: activeTab === 'profile' ? '2px solid var(--primary)' : '2px solid transparent',
-              cursor: 'pointer',
-              fontFamily: 'DM Sans, sans-serif',
-              fontWeight: '600',
-              transition: 'var(--transition-fast)',
-              marginBottom: '-2px'
-            }}
+            className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${
+              activeTab === 'profile' 
+                ? 'text-purple-400 border-purple-500 bg-purple-500/10' 
+                : 'text-slate-400 border-transparent hover:text-white hover:bg-white/5'
+            }`}
           >
             Profile Information
           </button>
           <button
             onClick={() => setActiveTab('password')}
-            style={{
-              padding: '12px 24px',
-              background: activeTab === 'password' ? 'var(--primary)' : 'transparent',
-              color: activeTab === 'password' ? 'white' : 'var(--text-secondary)',
-              border: 'none',
-              borderBottom: activeTab === 'password' ? '2px solid var(--primary)' : '2px solid transparent',
-              cursor: 'pointer',
-              fontFamily: 'DM Sans, sans-serif',
-              fontWeight: '600',
-              transition: 'var(--transition-fast)',
-              marginBottom: '-2px'
-            }}
+            className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${
+              activeTab === 'password' 
+                ? 'text-purple-400 border-purple-500 bg-purple-500/10' 
+                : 'text-slate-400 border-transparent hover:text-white hover:bg-white/5'
+            }`}
           >
             Change Password
           </button>
@@ -259,14 +236,16 @@ const Profile = () => {
 
                 <div className="form-group-custom" style={{ marginBottom: 'var(--spacing-md)' }}>
                   <label className="form-label">Role</label>
-                  <select
+                  <input
+                    type="text"
                     className="form-control-custom"
-                    value={profileData.role}
-                    onChange={(e) => setProfileData({ ...profileData, role: e.target.value })}
-                  >
-                    <option value="recruiter">Recruiter (I’m hiring)</option>
-                    <option value="candidate">Candidate (I’m looking for work)</option>
-                  </select>
+                    value={profileData.role === 'recruiter' ? "Recruiter" : "Candidate"}
+                    disabled
+                    style={{ opacity: 0.6, cursor: 'not-allowed' }}
+                  />
+                  <small style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
+                    Role is set at registration and cannot be changed.
+                  </small>
                 </div>
 
                 <button

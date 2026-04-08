@@ -9,7 +9,10 @@ const Navbar = () => {
   const location = useLocation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: "Welcome to TalentMatch AI!", time: "Just now", unread: true },
+    { id: 2, text: "Complete your profile to unlock AI matching", time: "1h ago", unread: false }
+  ]);
   const profileMenuRef = useRef(null);
   const notificationsRef = useRef(null);
 

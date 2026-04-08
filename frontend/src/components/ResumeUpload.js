@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import { resumeAPI } from '../services/api';
-import { FileUp } from 'lucide-react';
+import { FileUp, X, UploadCloud, AlertCircle, CheckCircle } from 'lucide-react';
+import Button from './ui/Button';
 
 const ResumeUpload = ({ onResumeUploaded, onClose }) => {
   const [formData, setFormData] = useState({
     candidateName: '', email: '', phone: '', skills: '', experience: '', education: ''
   });
   const [file, setFile] = useState(null);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState({ text: '', type: '' });
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      setMessage('Please select a resume file.');
+      setMessage({ text: 'Please select a resume file.', type: 'error' });
       return;
     }
 
@@ -29,191 +30,158 @@ const ResumeUpload = ({ onResumeUploaded, onClose }) => {
       onResumeUploaded?.();
       onClose?.();
     } catch (error) {
-      setMessage('Error uploading resume.');
+      setMessage({ text: 'Error uploading resume. Please try again.', type: 'error' });
     }
     setLoading(false);
   };
 
   return (
-    <>
-      {/* Modal Backdrop */}
+    <div 
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 sm:p-6"
+      onClick={onClose}
+    >
       <div 
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px'
-        }}
-        onClick={onClose}
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0a0520] border border-white/10 rounded-2xl shadow-2xl animate-scale-in"
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Content */}
-        <div 
-          className="card-custom"
-          style={{
-            width: '100%',
-            maxWidth: '600px',
-            maxHeight: '90vh',
-            overflowY: 'auto'
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="card-header-custom flex items-center justify-between">
-            <h2 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>Upload Resume</h2>
-            <button 
-              onClick={onClose}
-              style={{
-                background: 'none',
-                border: 'none',
-                fontSize: '24px',
-                cursor: 'pointer',
-                color: '#6b7280',
-                padding: '4px'
-              }}
-            >
-              ×
-            </button>
-          </div>
-          <div className="card-body-custom">
-            {message && (
-              <div style={{
-                padding: '12px 16px',
-                borderRadius: 'var(--radius)',
-                marginBottom: '20px',
-                backgroundColor: message.includes('Error') ? '#fef2f2' : '#f0fdf4',
-                color: message.includes('Error') ? 'var(--danger-color)' : 'var(--success-color)',
-                border: `1px solid ${message.includes('Error') ? '#fecaca' : '#bbf7d0'}`
-              }}>
-                {message}
-              </div>
-            )}
-            
-            <form onSubmit={handleSubmit}>
-              <div className="grid-2">
-                <div className="form-group-custom">
-                  <label className="form-label">Full Name</label>
-                  <input
-                    className="form-control-custom"
-                    value={formData.candidateName}
-                    onChange={(e) => setFormData({...formData, candidateName: e.target.value})}
-                    placeholder="Your Full Name"
-                    required
-                  />
-                </div>
-                <div className="form-group-custom">
-                  <label className="form-label">Email Address</label>
-                  <input
-                    type="email"
-                    className="form-control-custom"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    placeholder="Your email address"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="grid-2">
-                <div className="form-group-custom">
-                  <label className="form-label">Phone Number</label>
-                  <input
-                    className="form-control-custom"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    placeholder="Your Contact Number"
-                  />
-                </div>
-                <div className="form-group-custom">
-                  <label className="form-label">Education</label>
-                  <input
-                    className="form-control-custom"
-                    value={formData.education}
-                    onChange={(e) => setFormData({...formData, education: e.target.value})}
-                    placeholder="Your highest degree or institution"
-                  />
-                </div>
-              </div>
-              
-              <div className="form-group-custom">
-                <label className="form-label">Key Skills</label>
+        <div className="sticky top-0 bg-[#0a0520]/90 backdrop-blur-md border-b border-white/10 px-6 py-4 flex items-center justify-between z-10">
+          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <UploadCloud size={22} className="text-purple-400" />
+            Upload Profile
+          </h2>
+          <button 
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="p-6">
+          {message.text && (
+            <div className={`p-4 rounded-xl flex items-center gap-3 mb-6 border ${
+              message.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+            }`}>
+              {message.type === 'error' ? <AlertCircle size={20} /> : <CheckCircle size={20} />}
+              <p className="font-medium text-sm">{message.text}</p>
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="space-y-1.5 border-none">
+                <label className="text-sm font-medium text-slate-300">Full Name</label>
                 <input
-                  className="form-control-custom"
-                  value={formData.skills}
-                  onChange={(e) => setFormData({...formData, skills: e.target.value})}
-                  placeholder="React, Node.js, Python, SQL (comma-separated)"
+                  type="text"
+                  className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all font-sans"
+                  value={formData.candidateName}
+                  onChange={(e) => setFormData({...formData, candidateName: e.target.value})}
+                  placeholder="John Doe"
+                  required
                 />
               </div>
-              
-              <div className="form-group-custom">
-                <label className="form-label">Experience Summary</label>
-                <textarea
-                  className="form-control-custom"
-                  style={{ height: '72px', resize: 'vertical', paddingTop: '12px', paddingBottom: '12px' }}
-                  value={formData.experience}
-                  onChange={(e) => setFormData({...formData, experience: e.target.value})}
-                  placeholder="Brief summary of your work experience..."
+              <div className="space-y-1.5 border-none">
+                <label className="text-sm font-medium text-slate-300">Email Address</label>
+                <input
+                  type="email"
+                  className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all font-sans"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  placeholder="john@example.com"
+                  required
                 />
               </div>
-              
-              <div className="form-group-custom">
-                <label className="form-label">Resume File</label>
-                <div style={{
-                  border: '2px dashed #d1d5db',
-                  borderRadius: 'var(--radius)',
-                  padding: '24px',
-                  textAlign: 'center',
-                  backgroundColor: '#f9fafb',
-                  transition: 'border-color 0.2s ease'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px', opacity: 0.7 }}>
-                    <FileUp size={34} color="var(--text-muted)" />
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="space-y-1.5 border-none">
+                <label className="text-sm font-medium text-slate-300">Phone Number</label>
+                <input
+                  type="tel"
+                  className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all font-sans"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  placeholder="+1 (555) 000-0000"
+                />
+              </div>
+              <div className="space-y-1.5 border-none">
+                <label className="text-sm font-medium text-slate-300">Education</label>
+                <input
+                  type="text"
+                  className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all font-sans"
+                  value={formData.education}
+                  onChange={(e) => setFormData({...formData, education: e.target.value})}
+                  placeholder="B.S. Computer Science"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-1.5 border-none">
+              <label className="text-sm font-medium text-slate-300">Key Skills</label>
+              <input
+                type="text"
+                className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all font-sans"
+                value={formData.skills}
+                onChange={(e) => setFormData({...formData, skills: e.target.value})}
+                placeholder="React, Node.js, Python (comma-separated)"
+              />
+            </div>
+            
+            <div className="space-y-1.5 border-none">
+              <label className="text-sm font-medium text-slate-300">Experience Summary</label>
+              <textarea
+                className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all font-sans resize-y"
+                style={{ height: '80px' }}
+                value={formData.experience}
+                onChange={(e) => setFormData({...formData, experience: e.target.value})}
+                placeholder="Brief summary of your work experience..."
+              />
+            </div>
+            
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-300">Resume Document</label>
+              <div className="relative group border-2 border-dashed border-white/10 hover:border-purple-500/50 rounded-xl p-8 text-center bg-white/[0.02] transition-colors">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="p-3 rounded-full bg-white/5 group-hover:bg-purple-500/10 text-slate-400 group-hover:text-purple-400 transition-colors">
+                    <FileUp size={28} />
                   </div>
-                  <h4 style={{ marginBottom: '8px', color: 'var(--text-primary)' }}>Choose your resume file</h4>
-                  <p style={{ color: 'var(--text-muted)', marginBottom: '16px', fontSize: '14px' }}>PDF, DOC, DOCX, or TXT files accepted</p>
-                  <input
-                    type="file"
-                    accept=".pdf,.txt,.doc,.docx"
-                    onChange={(e) => setFile(e.target.files[0])}
-                    className="form-control-custom"
-                    required
-                  />
+                  <h4 className="font-medium text-white text-sm">
+                    {file ? file.name : "Click to attach or drag and drop"}
+                  </h4>
+                  <p className="text-xs text-slate-500">PDF or TXT up to 5MB</p>
                 </div>
+                <input
+                  type="file"
+                  accept=".pdf,.txt"
+                  onChange={(e) => setFile(e.target.files[0])}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  required
+                />
               </div>
-              
-              <div className="flex gap-sm">
-                <button 
-                  type="button" 
-                  onClick={onClose}
-                  style={{
-                    background: '#f3f4f6',
-                    border: '1px solid #d1d5db',
-                    color: '#374151',
-                    padding: '12px 24px',
-                    borderRadius: 'var(--radius)',
-                    fontWeight: '500',
-                    fontSize: '14px',
-                    height: '48px',
-                    cursor: 'pointer',
-                    flex: 1
-                  }}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn-primary-custom" style={{ flex: 2 }} disabled={loading}>
-                  {loading ? 'Uploading…' : 'Upload Resume'}
-                </button>
-              </div>
-            </form>
-          </div>
+            </div>
+            
+            <div className="flex gap-3 pt-4 border-t border-white/5 mt-6">
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={onClose}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={loading}
+                className="flex-[2]"
+              >
+                {loading ? 'Uploading...' : 'Save & Upload'}
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -8,7 +8,7 @@ const jobSchema = new mongoose.Schema({
   eligibility: { type: String },
   location: { type: String, required: true },
   salary: { type: String },
-  postedBy: { type: String, required: true },
+  postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   createdAt: { type: Date, default: Date.now }
 });
 

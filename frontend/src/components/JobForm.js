@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { jobAPI } from '../services/api';
+import { FilePlus2, X, Plus } from 'lucide-react';
+import Button from './ui/Button';
 
 const JobForm = ({ onJobCreated, onClose }) => {
   const [job, setJob] = useState({
-    title: '', company: '', description: '', requirements: '', eligibility: '', location: '', salary: '', postedBy: ''
+    title: '', company: '', description: '', requirements: '', eligibility: '', location: '', salary: ''
   });
   const [requiredSkills, setRequiredSkills] = useState([]);
   const [skillDraft, setSkillDraft] = useState('');
@@ -46,12 +48,11 @@ const JobForm = ({ onJobCreated, onClose }) => {
         requirements: requirementsParts.join('\n\n'),
         eligibility: eligibilityParts.join('\n')
       });
-      setJob({ title: '', company: '', description: '', requirements: '', eligibility: '', location: '', salary: '', postedBy: '' });
+      setJob({ title: '', company: '', description: '', requirements: '', eligibility: '', location: '', salary: '' });
       setRequiredSkills([]);
       setSkillDraft('');
       setExperienceLevel('mid');
       onJobCreated?.();
-      onClose?.();
     } catch (error) {
       setMessage('Error posting job');
     }
@@ -62,78 +63,51 @@ const JobForm = ({ onJobCreated, onClose }) => {
     <>
       {/* Modal Backdrop */}
       <div 
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px'
-        }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+        style={{ zIndex: 1000 }}
         onClick={onClose}
       >
         {/* Modal Content */}
         <div 
-          className="card-custom"
-          style={{
-            width: '100%',
-            maxWidth: '600px',
-            maxHeight: '90vh',
-            overflowY: 'auto'
-          }}
+          className="bg-gradient-to-b from-[#0a0520] to-[#030014] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="card-header-custom flex items-center justify-between">
-            <h2 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>Post New Job</h2>
+          <div className="sticky top-0 z-10 bg-[#0a0520]/90 backdrop-blur-md p-6 border-b border-white/5 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <FilePlus2 className="text-purple-400" size={20} />
+              Post New Job
+            </h2>
             <button 
               onClick={onClose}
-              style={{
-                background: 'none',
-                border: 'none',
-                fontSize: '24px',
-                cursor: 'pointer',
-                color: '#6b7280',
-                padding: '4px'
-              }}
+              className="text-slate-400 hover:text-white hover:bg-white/5 p-2 rounded-full transition-colors"
             >
-              ×
+              <X size={20} />
             </button>
           </div>
-          <div className="card-body-custom">
+          
+          <div className="p-6">
             {message && (
-              <div style={{
-                padding: '12px 16px',
-                borderRadius: 'var(--radius)',
-                marginBottom: '20px',
-                backgroundColor: '#fef2f2',
-                color: 'var(--danger-color)',
-                border: '1px solid #fecaca'
-              }}>
+              <div className="p-4 mb-6 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium">
                 {message}
               </div>
             )}
             
-            <form onSubmit={handleSubmit}>
-              <div className="grid-2">
-                <div className="form-group-custom">
-                  <label className="form-label">Job Title</label>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5 drop-shadow-md">Job Title</label>
                   <input
-                    className="form-control-custom"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all font-sans"
                     value={job.title}
                     onChange={(e) => setJob({...job, title: e.target.value})}
                     placeholder="e.g. Software Engineer"
                     required
                   />
                 </div>
-                <div className="form-group-custom">
-                  <label className="form-label">Company</label>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5 drop-shadow-md">Company</label>
                   <input
-                    className="form-control-custom"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all font-sans"
                     value={job.company}
                     onChange={(e) => setJob({...job, company: e.target.value})}
                     placeholder="Your Company Name"
@@ -142,11 +116,10 @@ const JobForm = ({ onJobCreated, onClose }) => {
                 </div>
               </div>
               
-              <div className="form-group-custom">
-                <label className="form-label">Job Description</label>
+              <div>
+                <label className="block text-sm font-semibold text-slate-300 mb-1.5 drop-shadow-md">Job Description</label>
                 <textarea
-                  className="form-control-custom"
-                  style={{ height: '92px', resize: 'vertical', paddingTop: '12px', paddingBottom: '12px' }}
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all font-sans resize-y min-h-[100px]"
                   value={job.description}
                   onChange={(e) => setJob({...job, description: e.target.value})}
                   placeholder="Describe the role and responsibilities..."
@@ -154,27 +127,17 @@ const JobForm = ({ onJobCreated, onClose }) => {
                 />
               </div>
               
-              <div className="form-group-custom">
-                <label className="form-label">Required Skills</label>
-                <div style={{
-                  border: '2px solid var(--border)',
-                  borderRadius: 'var(--radius)',
-                  padding: '12px',
-                  background: 'var(--bg-primary)'
-                }}>
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <div>
+                <label className="block text-sm font-semibold text-slate-300 mb-1.5 drop-shadow-md">Required Skills</label>
+                <div className="border border-white/10 rounded-xl p-4 bg-white/[0.02]">
+                  <div className="flex gap-3 items-center">
                     <input
-                      className="form-control-custom"
-                      style={{ height: 44 }}
+                      className="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all font-sans"
                       value={skillDraft}
                       onChange={(e) => setSkillDraft(e.target.value)}
                       placeholder="Type a skill and press Enter (e.g., React)"
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addSkill(skillDraft);
-                        }
-                        if (e.key === ',' ) {
+                        if (e.key === 'Enter' || e.key === ',') {
                           e.preventDefault();
                           addSkill(skillDraft);
                         }
@@ -182,127 +145,108 @@ const JobForm = ({ onJobCreated, onClose }) => {
                     />
                     <button
                       type="button"
-                      className="btn-primary-custom"
-                      style={{ height: 44, padding: '0 14px' }}
+                      className="px-4 py-2.5 rounded-xl bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 border border-purple-500/30 font-medium transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
                       onClick={() => addSkill(skillDraft)}
                       disabled={!skillDraft.trim()}
                     >
-                      Add
+                      <Plus size={16} /> Add
                     </button>
                   </div>
 
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+                  <div className="flex flex-wrap gap-2 mt-4">
                     {normalizedSkills.map((skill) => (
                       <button
                         key={skill}
                         type="button"
-                        className="badge-custom badge-primary"
-                        style={{ cursor: 'pointer' }}
+                        className="px-3 py-1.5 rounded-lg bg-indigo-500/20 hover:bg-red-500/20 border border-indigo-500/30 hover:border-red-500/30 text-indigo-300 hover:text-red-400 text-sm font-medium transition-colors flex items-center gap-2 group"
                         title="Click to remove"
                         onClick={() => removeSkill(skill)}
                       >
-                        {skill} ×
+                        {skill} <X size={14} className="opacity-50 group-hover:opacity-100" />
                       </button>
                     ))}
                     {normalizedSkills.length === 0 && (
-                      <span className="badge-custom badge-neutral" style={{ fontSize: 11 }}>
-                        No skills added yet
-                      </span>
+                      <span className="text-sm text-slate-500 italic">No skills added yet</span>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div className="grid-2">
-                <div className="form-group-custom">
-                  <label className="form-label">Experience Level</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5 drop-shadow-md">Experience Level</label>
                   <select
-                    className="form-control-custom"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-all font-sans appearance-none"
                     value={experienceLevel}
                     onChange={(e) => setExperienceLevel(e.target.value)}
                   >
-                    <option value="junior">Junior</option>
-                    <option value="mid">Mid</option>
-                    <option value="senior">Senior</option>
-                    <option value="lead">Lead</option>
+                    <option value="junior" className="bg-[#0a0520]">Junior</option>
+                    <option value="mid" className="bg-[#0a0520]">Mid</option>
+                    <option value="senior" className="bg-[#0a0520]">Senior</option>
+                    <option value="lead" className="bg-[#0a0520]">Lead</option>
                   </select>
-                </div>
-                <div className="form-group-custom">
-                  <label className="form-label">Posted By</label>
-                  <input
-                    className="form-control-custom"
-                    value={job.postedBy}
-                    onChange={(e) => setJob({...job, postedBy: e.target.value})}
-                    required
-                  />
                 </div>
               </div>
 
-              <div className="form-group-custom">
-                <label className="form-label">Additional Requirements</label>
+              <div>
+                <label className="block text-sm font-semibold text-slate-300 mb-1.5 drop-shadow-md">Additional Requirements</label>
                 <textarea
-                  className="form-control-custom"
-                  style={{ height: '92px', resize: 'vertical', paddingTop: '12px', paddingBottom: '12px' }}
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all font-sans resize-y min-h-[80px]"
                   value={job.requirements}
                   onChange={(e) => setJob({...job, requirements: e.target.value})}
                   placeholder="Optional details: certifications, constraints, tools, etc."
                 />
               </div>
 
-              <div className="form-group-custom">
-                <label className="form-label">Eligibility Criteria</label>
+              <div>
+                <label className="block text-sm font-semibold text-slate-300 mb-1.5 drop-shadow-md">Eligibility Criteria</label>
                 <textarea
-                  className="form-control-custom"
-                  style={{ height: '92px', resize: 'vertical', paddingTop: '12px', paddingBottom: '12px' }}
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all font-sans resize-y min-h-[80px]"
                   value={job.eligibility}
                   onChange={(e) => setJob({...job, eligibility: e.target.value})}
-                  placeholder="Eligibility requirements (e.g., years of experience, education level, certifications...)"
+                  placeholder="Eligibility requirements (e.g., years of experience, education level...)"
                 />
               </div>
               
-              <div className="grid-3">
-                <div className="form-group-custom">
-                  <label className="form-label">Location</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5 drop-shadow-md">Location</label>
                   <input
-                    className="form-control-custom"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all font-sans"
                     value={job.location}
                     onChange={(e) => setJob({...job, location: e.target.value})}
+                    placeholder="e.g. Remote, San Francisco"
                     required
                   />
                 </div>
-                <div className="form-group-custom">
-                  <label className="form-label">Salary Range</label>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5 drop-shadow-md">Salary Range</label>
                   <input
-                    className="form-control-custom"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all font-sans"
                     value={job.salary}
                     onChange={(e) => setJob({...job, salary: e.target.value})}
+                    placeholder="e.g. $100k - $120k / ₹ 7 - 9 LPA"
                   />
                 </div>
-                <div className="form-group-custom" />
               </div>
               
-              <div className="flex gap-sm">
-                <button 
-                  type="button" 
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/5">
+                <Button
+                  variant="secondary"
+                  type="button"
                   onClick={onClose}
-                  style={{
-                    background: '#f3f4f6',
-                    border: '1px solid #d1d5db',
-                    color: '#374151',
-                    padding: '12px 24px',
-                    borderRadius: 'var(--radius)',
-                    fontWeight: '500',
-                    fontSize: '14px',
-                    height: '48px',
-                    cursor: 'pointer',
-                    flex: 1
-                  }}
+                  className="w-full sm:w-auto"
                 >
                   Cancel
-                </button>
-                <button type="submit" className="btn-primary-custom" style={{ flex: 2 }} disabled={loading}>
+                </Button>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 w-full"
+                >
                   {loading ? 'Posting…' : 'Analyze & Post Job'}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

@@ -774,6 +774,11 @@ code, pre {
   background: transparent;
   font-family: 'DM Sans', sans-serif;
   font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+  text-align: left;
 }
 
 .dashboard-nav-item:hover {
@@ -855,5 +860,37 @@ code, pre {
 
 @keyframes aiDot {
   0%, 100% { opacity: 0.35; transform: translateY(0); }
-  50% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* ========================================================================= */
+/* STRICT GLOBAL OVERRIDES TO FIX TAILWIND PREFLIGHT BUGS & STACK CONTEXTS   */
+/* ========================================================================= */
+
+/* Ensure absolutely no default underlines on actionable elements anywhere */
+a, 
+a:-webkit-any-link,
+button a,
+.btn-primary-custom,
+.btn-primary-custom a {
+  text-decoration: none !important;
+}
+
+/* Allow utility class hover underline to explicitly function */
+a.hover\:underline:hover {
+  text-decoration: underline !important;
+}
+
+/* Hard-override broken backdrop-filter transparent bleeding bugs */
+.glass-card {
+  background: #0f172a !important; /* Force true Slate-900 */
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.glass-card-strong {
+  background: #020617 !important; /* Force true Slate-950 */
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }

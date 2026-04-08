@@ -1,0 +1,211 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ═══ Landing page base ═══ */
+.landing-page {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #030014;
+  color: #fff;
+  overflow-x: hidden;       /* CRITICAL: prevent horizontal scroll from glow blurs */
+  position: relative;
+  width: 100%;
+}
+
+.landing-page *, .landing-page *::before, .landing-page *::after {
+  box-sizing: border-box;
+}
+
+/* ═══ Auth form overrides (Bootstrap input reset) ═══ */
+.landing-page input,
+.landing-page select,
+.landing-page textarea {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 0.75rem !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+}
+.landing-page input::placeholder,
+.landing-page textarea::placeholder {
+  color: rgb(100, 116, 139) !important;
+}
+.landing-page input:focus,
+.landing-page select:focus,
+.landing-page textarea:focus {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(139, 92, 246, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2) !important;
+  outline: none !important;
+}
+.landing-page input:-webkit-autofill,
+.landing-page input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #0a0520 inset !important;
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ═══ Layout container (matches Container.js) ═══ */
+.landing-container {
+  width: 100%;
+  max-width: 1280px;        /* max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;     /* px-6 */
+  padding-right: 1.5rem;
+}
+@media (min-width: 640px) {
+  .landing-container {
+    padding-left: 2rem;      /* sm:px-8 */
+    padding-right: 2rem;
+  }
+}
+
+/* ═══ Section spacing (consistent 8px grid) ═══ */
+.landing-section {
+  position: relative;
+  padding-top: 5rem;         /* py-20 = 80px */
+  padding-bottom: 5rem;
+}
+@media (min-width: 1024px) {
+  .landing-section {
+    padding-top: 6rem;       /* lg:py-24 = 96px */
+    padding-bottom: 6rem;
+  }
+}
+
+/* ═══ Section header (consistent spacing) ═══ */
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;      /* mb-16 = 64px */
+}
+.section-header h2 {
+  margin-bottom: 1.25rem;   /* mb-5 */
+}
+.section-header p {
+  max-width: 40rem;         /* max-w-2xl */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ═══ Gradient text utility ═══ */
+.gradient-text {
+  background: linear-gradient(135deg, #a855f7, #818cf8, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ═══ Glass card utility ═══ */
+.glass-card {
+  background: rgba(15, 23, 42, 0.8); /* Dark slate instead of highly transparent white */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.glass-card-strong {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+}
+
+/* ═══ Glow button ═══ */
+.glow-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.glow-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #a855f7, #6366f1, #a855f7);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.glow-btn:hover::before {
+  opacity: 1;
+}
+.glow-btn:hover {
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.35);
+  transform: translateY(-2px);
+}
+
+/* ═══ Custom scrollbar ═══ */
+.landing-page::-webkit-scrollbar {
+  width: 6px;
+}
+.landing-page::-webkit-scrollbar-track {
+  background: #030014;
+}
+.landing-page::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+.landing-page::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+/* ═══ Shimmer effect ═══ */
+.shimmer-border {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(139,92,246,0.3) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ═══ Responsive utilities (override Bootstrap) ═══ */
+.landing-mobile-only {
+  display: flex !important;
+}
+@media (min-width: 768px) {
+  .landing-mobile-only {
+    display: none !important;
+  }
+}
+
+.landing-desktop-only {
+  display: none !important;
+}
+@media (min-width: 768px) {
+  .landing-desktop-only {
+    display: flex !important;
+  }
+}
+
+/* ═══ Mobile menu overlay (override Bootstrap) ═══ */
+.landing-mobile-overlay {
+  display: block !important;
+}
+@media (min-width: 768px) {
+  .landing-mobile-overlay {
+    display: none !important;
+  }
+}
+
+/* ═══ LG breakpoint responsive (override Bootstrap) ═══ */
+.landing-hide-lg {
+  display: flex !important;
+}
+@media (min-width: 1024px) {
+  .landing-hide-lg {
+    display: none !important;
+  }
+}
+
+.landing-show-lg {
+  display: none !important;
+}
+@media (min-width: 1024px) {
+  .landing-show-lg {
+    display: flex !important;
+  }
+}

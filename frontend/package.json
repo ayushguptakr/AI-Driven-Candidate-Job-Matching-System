@@ -18,7 +18,8 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "tailwindcss": "^3.4.19"
   },
   "browserslist": {
     "production": [

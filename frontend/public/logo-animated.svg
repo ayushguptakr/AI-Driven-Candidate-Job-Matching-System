@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" fill="none">
+  <defs>
+    <radialGradient id="core">
+      <stop offset="0%" stop-color="#C084FC" />
+      <stop offset="55%" stop-color="#A78BFA" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </radialGradient>
+
+    <radialGradient id="ambientGlow">
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#7C3AED" stop-opacity="0" />
+    </radialGradient>
+
+    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#6366F1" stop-opacity="0.05" />
+    </linearGradient>
+
+    <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A78BFA" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+
+    <filter id="coreGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+
+    <filter id="nodeGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Ambient glow -->
+  <circle cx="100" cy="100" r="46" fill="url(#ambientGlow)">
+    <animate attributeName="r" values="42;54;42" dur="5s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="5s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Orbital paths -->
+  <circle cx="100" cy="100" r="42" fill="none" stroke="#A78BFA" stroke-width="0.5" stroke-opacity="0.1" stroke-dasharray="4 8">
+    <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="50s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="100" cy="100" r="62" fill="none" stroke="#818CF8" stroke-width="0.4" stroke-opacity="0.07" stroke-dasharray="3 10">
+    <animateTransform attributeName="transform" type="rotate" from="360 100 100" to="0 100 100" dur="60s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="100" cy="100" r="80" fill="none" stroke="#6366F1" stroke-width="0.3" stroke-opacity="0.05" stroke-dasharray="2 14">
+    <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="70s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Processing arcs -->
+  <g opacity="0.35">
+    <g>
+      <path d="M 100 78 A 22 22 0 0 1 122 100" fill="none" stroke="url(#arcGrad)" stroke-width="1.8" stroke-linecap="round" />
+      <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="3s" repeatCount="indefinite" />
+    </g>
+    <g>
+      <path d="M 100 122 A 22 22 0 0 1 78 100" fill="none" stroke="url(#arcGrad)" stroke-width="1.2" stroke-linecap="round" />
+      <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="-360 100 100" dur="4s" repeatCount="indefinite" />
+    </g>
+  </g>
+
+  <!-- Node 1 — orbit r=42, 7s -->
+  <g>
+    <line x1="100" y1="100" x2="142" y2="100" stroke="url(#lineGrad)" stroke-width="0.8">
+      <animate attributeName="opacity" values="0.15;0.5;0.15" dur="3.5s" repeatCount="indefinite" />
+    </line>
+    <circle cx="142" cy="100" r="5" fill="#A78BFA" filter="url(#nodeGlow)">
+      <animate attributeName="r" values="4.5;6;4.5" dur="3s" repeatCount="indefinite" />
+    </circle>
+    <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="7s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Node 2 — orbit r=42, 7s, offset 180° -->
+  <g>
+    <line x1="100" y1="100" x2="142" y2="100" stroke="url(#lineGrad)" stroke-width="0.6">
+      <animate attributeName="opacity" values="0.1;0.4;0.1" dur="4s" repeatCount="indefinite" />
+    </line>
+    <circle cx="142" cy="100" r="3.5" fill="#818CF8" filter="url(#nodeGlow)" />
+    <animateTransform attributeName="transform" type="rotate" from="180 100 100" to="540 100 100" dur="7s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Node 3 — orbit r=62, reverse 10s -->
+  <g>
+    <line x1="100" y1="100" x2="162" y2="100" stroke="url(#lineGrad)" stroke-width="0.6">
+      <animate attributeName="opacity" values="0.08;0.35;0.08" dur="5s" repeatCount="indefinite" />
+    </line>
+    <circle cx="162" cy="100" r="4.5" fill="#C084FC" filter="url(#nodeGlow)">
+      <animate attributeName="r" values="4;5;4" dur="4s" repeatCount="indefinite" />
+    </circle>
+    <animateTransform attributeName="transform" type="rotate" from="70 100 100" to="-290 100 100" dur="10s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Node 4 — orbit r=62, reverse 10s, offset -->
+  <g>
+    <line x1="100" y1="100" x2="162" y2="100" stroke="url(#lineGrad)" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.06;0.3;0.06" dur="4.5s" repeatCount="indefinite" />
+    </line>
+    <circle cx="162" cy="100" r="3" fill="#7C3AED" filter="url(#nodeGlow)" />
+    <animateTransform attributeName="transform" type="rotate" from="220 100 100" to="-140 100 100" dur="10s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Node 5 — orbit r=80, 14s -->
+  <g>
+    <line x1="100" y1="100" x2="180" y2="100" stroke="url(#lineGrad)" stroke-width="0.4">
+      <animate attributeName="opacity" values="0.05;0.22;0.05" dur="6s" repeatCount="indefinite" />
+    </line>
+    <circle cx="180" cy="100" r="3.5" fill="#A78BFA" filter="url(#nodeGlow)">
+      <animate attributeName="r" values="3;4;3" dur="5s" repeatCount="indefinite" />
+    </circle>
+    <animateTransform attributeName="transform" type="rotate" from="40 100 100" to="400 100 100" dur="14s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Central AI core -->
+  <circle cx="100" cy="100" r="16" fill="url(#core)" filter="url(#coreGlow)">
+    <animate attributeName="r" values="15;17.5;15" dur="4s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Core highlight -->
+  <circle cx="95" cy="95" r="5.5" fill="white" fill-opacity="0.12" />
+
+  <!-- Core inner pulse ring -->
+  <circle cx="100" cy="100" r="10" fill="none" stroke="white" stroke-width="0.6" stroke-opacity="0.15">
+    <animate attributeName="r" values="8;13;8" dur="4s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0.1;0.3;0.1" dur="4s" repeatCount="indefinite" />
+  </circle>
+</svg>
