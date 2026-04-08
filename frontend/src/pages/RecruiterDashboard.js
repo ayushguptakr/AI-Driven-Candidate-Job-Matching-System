@@ -206,7 +206,7 @@ const RecruiterDashboard = () => {
     // 1. Empty / Loading State
     if (!candidate || loadingMatches) {
       return (
-        <div className="h-full flex flex-col p-6 bg-gradient-to-b from-[#0a0520] to-[#030014] border border-white/5 rounded-2xl relative overflow-hidden">
+        <div className="flex flex-col p-6 bg-gradient-to-b from-[#0a0520] to-[#030014] border border-white/5 rounded-2xl relative overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between mb-8 opacity-50">
             <div>
@@ -267,7 +267,7 @@ const RecruiterDashboard = () => {
                      : {bg: 'bg-slate-500/10', text: 'text-slate-400', border: 'border-slate-500/20'};
 
     return (
-      <div className="h-full rounded-2xl border border-white/10 bg-gradient-to-b from-[#0e0725] to-[#030014] flex flex-col p-5 relative overflow-y-auto animate-aiPaneFadeIn shadow-2xl">
+      <div className=" rounded-2xl border border-white/10 bg-gradient-to-b from-[#0e0725] to-[#030014] flex flex-col p-5 relative  animate-aiPaneFadeIn shadow-2xl">
         {/* Ambient Top Glow */}
         <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-purple-500/10 to-transparent blur-2xl pointer-events-none" />
         
@@ -523,7 +523,7 @@ const RecruiterDashboard = () => {
       )}
 
       {/* ── Sidebar ── */}
-      <aside className={`fixed lg:sticky lg:top-0 h-screen inset-y-0 left-0 w-64 bg-white/[0.02] border-r border-white/10 z-50 transform transition-transform duration-300 ease-out flex flex-col overflow-hidden ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`fixed lg:static inset-y-0 left-0 w-64 bg-white/[0.02] border-r border-white/10 z-50 transform transition-transform duration-300 ease-out flex flex-col ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="p-6 flex items-center justify-between border-b border-white/5">
           <LogoLink size={28} className="gap-2.5" />
           <button className="lg:hidden text-slate-400 hover:text-white" onClick={() => setIsSidebarOpen(false)}>
@@ -575,10 +575,10 @@ const RecruiterDashboard = () => {
       </aside>
 
       {/* ── Main Dashboard Area ── */}
-      <main className="flex-1 flex flex-col relative min-h-screen">
+      <main className="flex-1 flex flex-col relative h-screen overflow-hidden">
         
         {/* Top Header */}
-        <header className="sticky top-0 flex flex-col sm:flex-row sm:items-center justify-between p-6 border-b border-white/10 bg-[#030014]/95 backdrop-blur z-30 shrink-0">
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between p-6 border-b border-white/10 bg-white/[0.02] z-30 shrink-0">
           <div className="flex items-center gap-4 mb-4 sm:mb-0">
             <button className="lg:hidden text-slate-300 hover:text-white" onClick={() => setIsSidebarOpen(true)}>
               <Menu size={24} />
@@ -624,7 +624,7 @@ const RecruiterDashboard = () => {
         )}
 
         {/* Scrollable Layout */}
-        <div className="flex-1 flex flex-col p-6">
+        <div className="flex-1 overflow-y-auto p-6 scroll-smooth">
           
           {/* Stats Bar */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 shrink-0">
@@ -647,16 +647,16 @@ const RecruiterDashboard = () => {
           </div>
 
           {/* Tri-Pane Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start pb-20">
             
             {/* PANE A: Jobs List */}
-            <div className="flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl h-full">
+            <div className="flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl">
               <div className="p-4 border-b border-white/5 bg-white/[0.01]">
                 <h2 className="font-bold text-white flex items-center gap-2">
                   <BriefcaseBusiness size={18} className="text-indigo-400" /> My Jobs
                 </h2>
               </div>
-              <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              <div className="p-3 space-y-2">
                 {filteredJobs.length === 0 ? (
                   <div className="text-center p-6 text-slate-500 text-sm">No jobs found.</div>
                 ) : (
@@ -687,7 +687,7 @@ const RecruiterDashboard = () => {
             </div>
 
             {/* PANE B: Candidates / Matches */}
-            <div className="flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl h-full">
+            <div className="flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl">
               <div className="p-4 border-b border-white/5 bg-white/[0.01] flex justify-between items-center">
                 <h2 className="font-bold text-white flex items-center gap-2">
                   <Users size={18} className="text-purple-400" /> Candidate Pipeline
@@ -704,7 +704,7 @@ const RecruiterDashboard = () => {
                   </Button>
                 )}
               </div>
-              <div className="flex-1 overflow-y-auto p-3 space-y-2 relative">
+              <div className="p-3 space-y-2 relative min-h-[300px]">
                 {!selectedJob ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                     <UserPlus size={36} className="text-slate-600 mb-3" />
@@ -786,7 +786,7 @@ const RecruiterDashboard = () => {
             </div>
 
             {/* PANE C: AI Insights */}
-            <div className="h-full hidden lg:block">
+            <div className="hidden lg:block">
               <AIInsightsPreviewPane candidate={selectedCandidate} />
             </div>
 
