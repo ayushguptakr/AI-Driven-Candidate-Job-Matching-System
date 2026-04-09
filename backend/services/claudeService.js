@@ -33,7 +33,7 @@ Respond only with valid JSON.`;
       reasoning: response.reasoning || ''
     };
   } catch (error) {
-    console.error('Claude API error:', error);
+    console.error('AI API error:', error);
     return { score: 0, matchingSkills: [], reasoning: 'Analysis failed' };
   }
 };

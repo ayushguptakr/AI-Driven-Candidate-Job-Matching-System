@@ -1,13 +1,13 @@
 # TalentMatch AI
 # AI-Driven Candidate-Job Matching System
 
-An intelligent job matching platform that uses Claude AI to analyze resumes and match candidates with job postings based on skills, experience, and requirements.
+An intelligent job matching platform that uses AI to analyze resumes and match candidates with job postings based on skills, experience, and requirements.
 
 ## Features
 
 - **Recruiter Portal**: Post jobs, view AI-powered candidate matches with scores
 - **Candidate Portal**: Upload resumes, view available jobs
-- **AI Matching**: Claude API analyzes resume-job compatibility
+- **AI Matching**: AI analyzes resume-job compatibility
 - **Match Scoring**: 0-100% compatibility scores with highlighted matching skills
 - **Real-time Results**: Instant matching results with detailed breakdowns
 
@@ -16,7 +16,7 @@ An intelligent job matching platform that uses Claude AI to analyze resumes and 
 - **Frontend**: React.js, Bootstrap, React Router
 - **Backend**: Node.js, Express.js, Multer (file upload)
 - **Database**: MongoDB with Mongoose
-- **AI**: Claude API for intelligent matching
+- **AI**: AI API for intelligent matching
 - **File Processing**: PDF parsing for resume content extraction
 
 ## Setup Instructions
@@ -24,7 +24,7 @@ An intelligent job matching platform that uses Claude AI to analyze resumes and 
 ### Prerequisites
 - Node.js (v16+)
 - MongoDB (local or cloud)
-- Claude API key from Anthropic
+- AI API key
 
 ### Backend Setup
 ```bash
@@ -36,7 +36,7 @@ Create `.env` file:
 ```
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/job-matching
-CLAUDE_API_KEY=your_claude_api_key_here
+AI_API_KEY=your_ai_api_key_here
 NODE_ENV=development
 ```
 
@@ -88,7 +88,7 @@ npm start
 1. Recruiter posts job with requirements
 2. Candidates upload resumes
 3. Click "Run AI Matching" for any job
-4. Claude AI analyzes each resume against job requirements
+4. AI analyzes each resume against job requirements
 5. Returns compatibility scores (0-100%) and matching skills
 6. Results displayed in ranked table format
 
@@ -102,7 +102,7 @@ npm start
 ├── backend/
 │   ├── models/          # MongoDB schemas
 │   ├── routes/          # API endpoints
-│   ├── services/        # Claude AI integration
+│   ├── services/        # AI integration
 │   ├── config/          # Database configuration
 │   └── server.js        # Express server
 ├── frontend/
@@ -120,7 +120,7 @@ npm start
 - **Job Model**: Stores job postings with requirements
 - **Resume Model**: Stores candidate resumes and extracted content
 - **Match Model**: Stores AI analysis results and scores
-- **Claude Service**: Handles AI-powered resume-job matching
+- **AI Service**: Handles AI-powered resume-job matching
 
 ### Frontend
 - **JobForm**: Recruiter job posting interface
@@ -129,7 +129,7 @@ npm start
 - **Dashboards**: Separate portals for recruiters and candidates
 
 ## AI Matching Logic
-The Claude API analyzes:
+The AI API analyzes:
 1. Job requirements vs resume skills
 2. Experience level compatibility
 3. Education background relevance

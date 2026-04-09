@@ -4,7 +4,7 @@ import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 const faqData = [
   {
     question: 'How does the AI matching work?',
-    answer: 'TalentMatch AI uses Claude (by Anthropic) to analyze resume content against job descriptions. It evaluates skills, experience, education, and overall fit to generate a compatibility score from 0–100% along with matching skills and detailed reasoning.',
+    answer: 'TalentMatch AI uses advanced AI to analyze resume content against job descriptions. It evaluates skills, experience, education, and overall fit to generate a compatibility score from 0–100% along with matching skills and detailed reasoning.',
   },
   {
     question: 'What file formats are supported for resumes?',

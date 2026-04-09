@@ -9,7 +9,7 @@ const features = [
       </svg>
     ),
     title: 'AI-Powered Intelligence',
-    description: 'Claude AI deeply analyzes resume content against job requirements for intelligent, context-aware matching.',
+    description: 'AI deeply analyzes resume content against job requirements for intelligent, context-aware matching.',
     problem: 'Manual resume screening takes hours',
     solution: 'AI analyzes in seconds with 96% accuracy',
     gradient: 'from-purple-500 to-violet-500',
