@@ -64,7 +64,7 @@ const FAQ = () => {
                 onClick={() => toggle(i)}
                 className="text-white flex justify-between items-center w-full p-5 sm:p-6 text-left group hover:bg-white/10 transition-colors"
               >
-                <h3 className="text-white font-semibold text-base sm:text-lg pr-4">
+                <h3 className="text-gray-500 font-semibold text-base sm:text-lg pr-4">
                   {faq.question}
                 </h3>
                 <span className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
