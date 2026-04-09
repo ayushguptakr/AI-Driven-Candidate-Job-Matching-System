@@ -50,11 +50,8 @@ const Login = () => {
 
           <div className="relative z-10">
             {/* Logo */}
-            <Link to="/" variant="unstyled" className="flex items-center gap-3 mb-12 group">
-              <AnimatedLogo size={44} />
-              <span className="text-white font-bold text-2xl tracking-tight group-hover:text-purple-200 transition-colors">
-                TalentMatch AI
-              </span>
+            <Link to="/" variant="unstyled" className="block mb-12 transform hover:scale-[1.02] transition-transform">
+              <AnimatedLogo size={80} withText={true} />
             </Link>
 
             {/* Headline */}
@@ -90,10 +87,9 @@ const Login = () => {
 
           <div className={`relative z-10 w-full max-w-[420px] transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             {/* Mobile Logo */}
-            <div className="landing-hide-lg flex items-center justify-center gap-2.5 mb-10">
-              <Link to="/" variant="unstyled" className="flex items-center gap-2.5">
-                <AnimatedLogo size={36} />
-                <span className="text-white font-bold text-xl tracking-tight">TalentMatch AI</span>
+            <div className="landing-hide-lg flex items-center justify-center mb-10">
+              <Link to="/" variant="unstyled" className="block">
+                <AnimatedLogo size={70} withText={true} />
               </Link>
             </div>
 

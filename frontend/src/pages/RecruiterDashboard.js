@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { jobAPI, applicationAPI } from '../services/api';
+import { jobAPI, applicationAPI, recruiterAPI, inviteAPI } from '../services/api';
 import { 
   BriefcaseBusiness, Building2, Calendar, IndianRupee, FilePlus2, 
   MapPin, Settings2, Users, BrainCircuit, Search, Menu, X, LogOut,
-  Target, Activity, ChevronRight, CheckCircle, AlertCircle, Sparkles, UserPlus, Info
+  Target, Activity, ChevronRight, CheckCircle, AlertCircle, Sparkles, UserPlus, Info, Undo, Loader2, Copy
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AnimatedLogo from '../components/landing/AnimatedLogo';
 import LogoLink from '../components/ui/LogoLink';
 import JobForm from '../components/JobForm';
 import Button from '../components/ui/Button';
+import ProfileDrawer from '../components/ProfileDrawer';
 
 const RecruiterDashboard = () => {
   const { user, logout } = useAuth();
@@ -28,9 +29,18 @@ const RecruiterDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeNav, setActiveNav] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteLink, setInviteLink] = useState('');
   const [loadingMatches, setLoadingMatches] = useState(false);
   const [statusMessage, setStatusMessage] = useState({ text: '', type: '' });
   const [isFullInsightsOpen, setIsFullInsightsOpen] = useState(false);
+  
+  // Action state
+  const [pendingActions, setPendingActions] = useState({});
+  const actionTimers = useRef({});
   
   const [stats, setStats] = useState({
     totalJobs: 0,
@@ -46,7 +56,7 @@ const RecruiterDashboard = () => {
 
   const loadJobs = async () => {
     try {
-      const response = await jobAPI.getAll();
+      const response = await jobAPI.getMyJobs();
       const jobsList = response.data.jobs || response.data;
       setJobs(jobsList);
       
@@ -112,6 +122,45 @@ const RecruiterDashboard = () => {
     }
   };
 
+  const handleCandidateAction = (candidateId, action) => {
+    if (!selectedJob) return;
+    if (actionTimers.current[candidateId]) clearTimeout(actionTimers.current[candidateId]);
+    
+    setPendingActions(prev => ({ ...prev, [candidateId]: action }));
+    
+    actionTimers.current[candidateId] = setTimeout(async () => {
+      try {
+        await recruiterAPI.candidateAction(candidateId, selectedJob._id, action);
+        setMatches(current => current.map(m => m._id === candidateId ? { ...m, recruiterDecision: action } : m));
+        setPendingActions(prev => {
+          const next = { ...prev };
+          delete next[candidateId];
+          return next;
+        });
+      } catch (err) {
+        console.error('Action failed:', err);
+        setPendingActions(prev => {
+          const next = { ...prev };
+          delete next[candidateId];
+          return next;
+        });
+        showMessage('Action failed. Please try again.', 'error');
+      }
+    }, 5000);
+  };
+
+  const undoCandidateAction = (candidateId) => {
+    if (actionTimers.current[candidateId]) {
+      clearTimeout(actionTimers.current[candidateId]);
+      delete actionTimers.current[candidateId];
+    }
+    setPendingActions(prev => {
+      const next = { ...prev };
+      delete next[candidateId];
+      return next;
+    });
+  };
+
   const runMatching = async () => {
     if (!selectedJob) return;
     setLoadingMatches(true);
@@ -131,11 +180,34 @@ const RecruiterDashboard = () => {
     navigate('/');
   };
 
-  const filteredJobs = jobs.filter(job => 
-    searchQuery === '' || 
-    job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.company.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleInviteSubmit = async (e) => {
+    e.preventDefault();
+    if (!inviteEmail) return;
+    setInviteLoading(true);
+    setInviteLink('');
+    try {
+      const response = await inviteAPI.create({ email: inviteEmail, role: 'recruiter' });
+      setInviteLink(response.data.inviteLink);
+      console.log('DEV MODE - Invite Link:', response.data.inviteLink);
+      showMessage('Invite generated. Copy link to share.', 'success');
+    } catch (err) {
+      showMessage(err.response?.data?.error || 'Failed to generate invite.', 'error');
+    }
+    setInviteLoading(false);
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(inviteLink);
+    showMessage('Invite link copied to clipboard!', 'success');
+  };
+
+  const filteredJobs = useMemo(() => {
+    return jobs.filter(job => 
+      job.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (job.company?.name || job.company || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (job.location || '').toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [jobs, searchQuery]);
 
   // Combine applications and matches for unified view
   const candidateList = useMemo(() => {
@@ -319,21 +391,30 @@ const RecruiterDashboard = () => {
                 </p>
                 
                 {/* 5. Smart Suggestions (Chips) */}
-                <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-purple-500/10">
-                  <span className="text-[10px] uppercase font-bold text-slate-500 w-full mb-1">Recommended Actions</span>
-                  {score >= 80 ? (
-                    <button onClick={() => appRecord && handleUpdateApplicationStatus(appRecord._id, 'shortlisted')} className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium hover:bg-emerald-500/20 transition-colors">
-                      ✨ Move to Shortlist
+                <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-purple-500/10">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 w-full mb-1">Candidate Decision</span>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => handleCandidateAction(candidate._id, 'shortlisted')}
+                      className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                        pendingActions[candidate._id] === 'shortlisted' || (!pendingActions[candidate._id] && candidate.recruiterDecision === 'shortlisted')
+                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' 
+                        : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+                      }`}
+                    >
+                      {pendingActions[candidate._id] === 'shortlisted' || candidate.recruiterDecision === 'shortlisted' ? '✅ Shortlisted' : 'Shortlist Candidate'}
                     </button>
-                  ) : score >= 50 ? (
-                    <button className="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-medium hover:bg-amber-500/20 transition-colors">
-                      🤔 Consider with interview
+                    <button 
+                      onClick={() => handleCandidateAction(candidate._id, 'rejected')}
+                      className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                        pendingActions[candidate._id] === 'rejected' || (!pendingActions[candidate._id] && candidate.recruiterDecision === 'rejected')
+                        ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' 
+                        : 'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20'
+                      }`}
+                    >
+                      {pendingActions[candidate._id] === 'rejected' || candidate.recruiterDecision === 'rejected' ? '❌ Rejected' : 'Reject Candidate'}
                     </button>
-                  ) : (
-                    <button onClick={() => appRecord && handleUpdateApplicationStatus(appRecord._id, 'rejected')} className="px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium hover:bg-red-500/20 transition-colors">
-                      📉 Reject candidate
-                    </button>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -556,21 +637,22 @@ const RecruiterDashboard = () => {
         </div>
 
         <div className="p-4 border-t border-white/5">
-          <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-purple-500/20">
+          <div 
+            className="sidebar-profile flex items-center gap-3 px-2 py-2 rounded-xl group relative cursor-pointer hover:bg-white/5 transition-colors"
+            onClick={() => setIsProfileDrawerOpen(true)}
+            title="View Profile"
+          >
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-purple-500/20 z-10 shrink-0">
               {user?.name?.charAt(0) || 'R'}
             </div>
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 z-10">
               <p className="text-sm font-medium text-white truncate">{user?.name || 'Recruiter'}</p>
-              <p className="text-xs text-slate-400 truncate">{user?.email || 'recruiter@example.com'}</p>
+              <p className="text-[11px] text-slate-400 truncate uppercase tracking-widest mt-0.5">{user?.role || 'Recruiter'}</p>
+            </div>
+            <div className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+               <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></div>
             </div>
           </div>
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
-          >
-            <LogOut size={16} /> Sign out
-          </button>
         </div>
       </aside>
 
@@ -601,6 +683,14 @@ const RecruiterDashboard = () => {
               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
             </div>
             <Button 
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsInviteModalOpen(true)}
+              className="hidden md:flex rounded-full shrink-0"
+            >
+              <UserPlus size={16} /> Invite Member
+            </Button>
+            <Button 
               variant="primary"
               size="sm"
               onClick={() => setIsPostJobOpen(true)}
@@ -622,6 +712,27 @@ const RecruiterDashboard = () => {
             </div>
           </div>
         )}
+
+        {/* Undo Toasts */}
+        <div className="absolute bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none">
+          {Object.entries(pendingActions).map(([cId, action]) => {
+            const cand = candidateList.find(c => c._id === cId);
+            return (
+              <div key={cId} className="w-80 p-4 rounded-2xl bg-[#0a0520] border border-white/10 shadow-2xl flex items-center justify-between pointer-events-auto animate-fade-in-up">
+                <div className="min-w-0 pr-4">
+                  <p className="text-sm font-bold text-white truncate">{action === 'shortlisted' ? 'Shortlisting...' : 'Rejecting...'}</p>
+                  <p className="text-xs text-slate-400 truncate">{cand?.resumeId?.candidateName}</p>
+                </div>
+                <button 
+                  onClick={() => undoCandidateAction(cId)}
+                  className="shrink-0 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center gap-1.5 transition-colors"
+                >
+                  <Undo size={14} /> Undo
+                </button>
+              </div>
+            );
+          })}
+        </div>
 
         {/* Scrollable Layout */}
         <div className="flex-1 overflow-y-auto p-6 scroll-smooth">
@@ -667,12 +778,17 @@ const RecruiterDashboard = () => {
                       className={`p-4 rounded-xl border cursor-pointer transition-all ${selectedJob?._id === job._id ? 'bg-purple-600/10 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.1)]' : 'bg-white/[0.02] border-white/5 border-transparent hover:border-white/10 hover:bg-white/[0.04]'}`}
                     >
                       <h3 className={`font-bold mb-1 truncate ${selectedJob?._id === job._id ? 'text-purple-300' : 'text-white'}`}>{job.title}</h3>
-                      <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
-                        <span className="truncate">{job.company}</span>
-                        <span>•</span>
-                        <span className="truncate">{job.location}</span>
+                      <div className="flex items-center gap-4 text-xs mt-2 text-slate-400">
+                        <span className="flex items-center gap-1.5 min-w-0">
+                          <Building2 size={14} className="text-purple-400/70 shrink-0" />
+                          <span className="truncate">{job.company?.name || job.company}</span>
+                        </span>
+                        <span className="flex items-center gap-1.5 min-w-0">
+                          <MapPin size={14} className="text-purple-400/70 shrink-0" />
+                          <span className="truncate">{job.location}</span>
+                        </span>
                       </div>
-                      <div className="flex items-center justify-between text-xs font-medium">
+                      <div className="flex items-center justify-between text-xs font-medium mt-3">
                         <span className="px-2 py-0.5 rounded-md bg-white/5 text-slate-300">
                           {new Date(job.createdAt).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}
                         </span>
@@ -722,33 +838,65 @@ const RecruiterDashboard = () => {
                   </div>
                 ) : (
                   <>
-                    {/* Render Matches List */}
-                    {candidateList.map((match, i) => {
-                      const score = Number(match.score || 0);
-                      const isSelected = selectedCandidate?._id === match._id;
+                    {/* Render Grouped Matches */}
+                    {['shortlisted', 'none', 'rejected'].map(groupType => {
+                      const groupMatches = candidateList.filter(m => {
+                        const decision = pendingActions[m._id] || m.recruiterDecision || 'none';
+                        return decision === groupType;
+                      });
+                      
+                      if (groupMatches.length === 0) return null;
                       
                       return (
-                        <div 
-                          key={match._id || i}
-                          onClick={() => setSelectedCandidate(match)}
-                          className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${isSelected ? 'bg-white/10 border-white/20' : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/[0.04]'}`}
-                        >
-                          <div className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center border font-bold text-xs ${getScoreColor(score)}`}>
-                            {score}%
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-start justify-between gap-2 mb-1">
-                              <h4 className="text-sm font-bold text-white truncate">{match.resumeId?.candidateName || 'Candidate'}</h4>
-                              {applications.find(a => a.resumeId?._id === match.resumeId?._id) && (
-                                <span className="shrink-0 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold bg-indigo-500/20 text-indigo-300">Applied</span>
-                              )}
-                            </div>
-                            <p className="text-xs text-slate-400 truncate mb-2">{match.resumeId?.education || 'Profile Data'}</p>
-                            <div className="flex flex-wrap gap-1">
-                              {Array.isArray(match.matchingSkills) && match.matchingSkills.slice(0, 3).map((skill, si) => (
-                                <span key={si} className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300">{skill}</span>
-                              ))}
-                            </div>
+                        <div key={groupType} className="mb-6 last:mb-0">
+                          <h3 className={`text-[10px] font-bold uppercase tracking-wider mb-3 px-1 flex items-center gap-1.5 ${
+                            groupType === 'shortlisted' ? 'text-emerald-400' :
+                            groupType === 'rejected' ? 'text-slate-500' :
+                            'text-slate-400'
+                          }`}>
+                            {groupType === 'shortlisted' ? '⭐ Shortlisted' :
+                             groupType === 'rejected' ? '❌ Rejected' :
+                             '📋 Pending'}
+                             <span className="px-1.5 py-0.5 rounded-full bg-white/5 text-[9px]">{groupMatches.length}</span>
+                          </h3>
+                          <div className="space-y-2">
+                            {groupMatches.map((match, i) => {
+                              const score = Number(match.score || 0);
+                              const isSelected = selectedCandidate?._id === match._id;
+                              const isRejected = groupType === 'rejected';
+                              
+                              return (
+                                <div 
+                                  key={match._id || i}
+                                  onClick={() => setSelectedCandidate(match)}
+                                  className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
+                                    isSelected ? 'bg-white/10 border-white/20' : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/[0.04]'
+                                  } ${isRejected ? 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0' : ''}`}
+                                >
+                                  <div className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center border font-bold text-xs ${getScoreColor(score)}`}>
+                                    {score}%
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-start justify-between gap-2 mb-1">
+                                      <h4 className="text-sm font-bold text-white truncate">{match.resumeId?.candidateName || 'Candidate'}</h4>
+                                      <div className="flex gap-1.5 shrink-0">
+                                        {groupType === 'shortlisted' && <span className="px-1.5 py-0.5 rounded text-[10px] uppercase font-bold bg-emerald-500/20 text-emerald-400">✅</span>}
+                                        {groupType === 'rejected' && <span className="px-1.5 py-0.5 rounded text-[10px] uppercase font-bold bg-red-500/20 text-red-400">❌</span>}
+                                        {applications.find(a => a.resumeId?._id === match.resumeId?._id) && (
+                                          <span className="px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold bg-indigo-500/20 text-indigo-300">Applied</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <p className="text-xs text-slate-400 truncate mb-2">{match.resumeId?.education || 'Profile Data'}</p>
+                                    <div className="flex flex-wrap gap-1">
+                                      {Array.isArray(match.matchingSkills) && match.matchingSkills.slice(0, 3).map((skill, si) => (
+                                        <span key={si} className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300">{skill}</span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       );
@@ -811,6 +959,83 @@ const RecruiterDashboard = () => {
           onClose={() => setIsPostJobOpen(false)}
         />
       )}
+
+      {/* Invite Member Modal */}
+      {isInviteModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-[#0a0520] border border-white/10 rounded-2xl w-full max-w-md p-6 relative shadow-2xl">
+            <button 
+              onClick={() => {
+                setIsInviteModalOpen(false);
+                setInviteLink('');
+                setInviteEmail('');
+              }}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white"
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+              <UserPlus className="text-purple-400" size={20} /> Invite Team Member
+            </h2>
+            <p className="text-sm text-slate-400 mb-6">Send an invite link to collaborate in your workspace.</p>
+            
+            {!inviteLink ? (
+              <form onSubmit={handleInviteSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Email Address</label>
+                  <input 
+                    type="email" 
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    placeholder="colleague@company.com"
+                    required
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-purple-500 outline-none transition-all"
+                  />
+                </div>
+                <Button type="submit" variant="primary" fullWidth disabled={inviteLoading}>
+                  {inviteLoading ? <Loader2 className="animate-spin m-auto" size={18} /> : 'Generate Invite Link'}
+                </Button>
+              </form>
+            ) : (
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                  <p className="text-emerald-400 font-medium text-sm mb-2 flex items-center gap-1.5">
+                    <CheckCircle size={16} /> Invite Generated!
+                  </p>
+                  <p className="text-xs text-slate-400 mb-3">Copy this secure link and share it with your teammate.</p>
+                  <div className="flex items-center gap-2">
+                    <input 
+                      type="text" 
+                      readOnly 
+                      value={inviteLink}
+                      className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-slate-300 text-xs outline-none"
+                    />
+                    <button 
+                      onClick={copyToClipboard}
+                      className="p-2 rounded-lg bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 transition-colors shrink-0 tooltip-trigger relative"
+                      title="Copy to clipboard"
+                    >
+                      <Copy size={16} />
+                    </button>
+                  </div>
+                </div>
+                <Button variant="secondary" fullWidth onClick={() => {
+                  setIsInviteModalOpen(false);
+                  setInviteLink('');
+                  setInviteEmail('');
+                }}>
+                  Done
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <ProfileDrawer 
+        isOpen={isProfileDrawerOpen} 
+        onClose={() => setIsProfileDrawerOpen(false)} 
+      />
 
     </div>
   );

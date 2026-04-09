@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post(`${API_BASE}/auth/login`, { email, password });
       localStorage.setItem('token', response.data.token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-      setUser(response.data.user);
+      await fetchUser(); // Ensure fully populated user
       return response.data.user;
     } catch (error) {
       const errorMessage = error.response?.data?.error || 'Login failed. Please try again.';
@@ -53,13 +53,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (email, password, name, role) => {
+  const register = async ({ email, password, name, role, companyName }) => {
     try {
       setError(null);
-      const response = await axios.post(`${API_BASE}/auth/register`, { email, password, name, role });
+      const response = await axios.post(`${API_BASE}/auth/register`, { email, password, name, role, companyName });
       localStorage.setItem('token', response.data.token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-      setUser(response.data.user);
+      await fetchUser(); // Ensure fully populated user
       return response.data.user;
     } catch (error) {
       const errorMessage = error.response?.data?.error || 'Registration failed. Please try again.';

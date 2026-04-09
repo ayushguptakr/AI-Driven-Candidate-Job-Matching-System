@@ -19,14 +19,16 @@ router.get('/', async (req, res) => {
       ? {
           $or: [
             { title: { $regex: search, $options: 'i' } },
-            { company: { $regex: search, $options: 'i' } },
             { location: { $regex: search, $options: 'i' } }
           ]
         }
       : {};
 
+    // Note: To properly search by company name, we would need to aggregate or search companies first. 
+    // This simple approach searches title and location.
+
     const [jobs, total] = await Promise.all([
-      Job.find(filter).populate('postedBy', 'name email').sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Job.find(filter).populate('postedBy', 'name email').populate('company', 'name').sort({ createdAt: -1 }).skip(skip).limit(limit),
       Job.countDocuments(filter)
     ]);
 
@@ -47,10 +49,10 @@ router.get('/', async (req, res) => {
 // Create new job (Recruiter only) — automatically tied to authenticated user
 router.post('/', auth, checkRole('recruiter'), async (req, res) => {
   try {
-    const { title, company, description, requirements, eligibility, location, salary } = req.body;
+    const { title, company: companyName, description, requirements, eligibility, location, salary } = req.body;
     const job = new Job({
       title,
-      company,
+      company: req.user.companyId,
       description,
       requirements,
       eligibility,
@@ -62,6 +64,35 @@ router.post('/', auth, checkRole('recruiter'), async (req, res) => {
     res.status(201).json(job);
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+// Get jobs created by the logged-in recruiter's company
+router.get('/my-jobs', auth, checkRole('recruiter'), async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const search = req.query.search || '';
+    const skip = (page - 1) * limit;
+
+    const filter = { company: req.user.companyId };
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const [jobs, total] = await Promise.all([
+      Job.find(filter).populate('postedBy', 'name email').populate('company', 'name').sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Job.countDocuments(filter)
+    ]);
+
+    res.json({
+      jobs,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

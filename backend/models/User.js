@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
   phone: { type: String },
   bio: { type: String },
   location: { type: String },
-  company: { type: String },
+  company: { type: String }, // For candidates (text field)
+  companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company' }, // For recruiters (reference)
   createdAt: { type: Date, default: Date.now }
 });
 

@@ -6,13 +6,72 @@ const { auth, getJwtSecret } = require('../middleware/auth');
 
 const router = express.Router();
 
+const crypto = require('crypto');
+const Company = require('../models/Company');
+const Invite = require('../models/Invite');
+
+// Signup with Invite
+router.post('/signup-with-invite', async (req, res) => {
+  try {
+    const { token, name, password } = req.body;
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const invite = await Invite.findOne({ token: hashedToken });
+
+    if (!invite || invite.status !== 'pending' || invite.expiresAt < Date.now()) {
+      if (invite && invite.expiresAt < Date.now() && invite.status !== 'expired') {
+        invite.status = 'expired';
+        await invite.save();
+      }
+      return res.status(400).json({ error: 'Invalid or expired invite' });
+    }
+
+    const existingUser = await User.findOne({ email: invite.email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists. Please login.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({
+      email: invite.email,
+      password: hashedPassword,
+      name,
+      role: invite.role,
+      companyId: invite.companyId
+    });
+
+    await user.save();
+
+    invite.status = 'accepted';
+    await invite.save();
+
+    const jwtToken = jwt.sign(
+      { userId: user._id, email: user.email, role: user.role, companyId: user.companyId },
+      getJwtSecret(),
+      { expiresIn: '7d' }
+    );
+
+    res.status(201).json({ token: jwtToken, user: { id: user._id, email: user.email, name, role: user.role, companyId: user.companyId } });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name, role } = req.body;
+    const { email, password, name, role, companyName } = req.body;
     
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    if (role === 'recruiter' && !companyName) {
+      return res.status(400).json({ error: 'Company name is required for recruiters' });
     }
     
     const existingUser = await User.findOne({ email });
@@ -20,17 +79,32 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Email already registered' });
     }
     
+    let userCompanyId = null;
+    if (role === 'recruiter') {
+      let company = await Company.findOne({ name: { $regex: new RegExp(`^${companyName}$`, 'i') } });
+      if (!company) {
+        company = new Company({ name: companyName });
+        await company.save();
+      }
+      userCompanyId = company._id;
+    }
+    
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ email, password: hashedPassword, name, role });
+    const user = new User({ email, password: hashedPassword, name, role, companyId: userCompanyId });
     await user.save();
     
+    // Update company createdBy if it's new
+    if (role === 'recruiter' && userCompanyId) {
+      await Company.updateOne({ _id: userCompanyId, createdBy: { $exists: false } }, { $set: { createdBy: user._id } });
+    }
+    
     const token = jwt.sign(
-      { userId: user._id, email: user.email, role: user.role },
+      { userId: user._id, email: user.email, role: user.role, companyId: userCompanyId },
       getJwtSecret(),
       { expiresIn: '7d' }
     );
     
-    res.status(201).json({ token, user: { id: user._id, email, name, role } });
+    res.status(201).json({ token, user: { id: user._id, email, name, role, companyId: userCompanyId } });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -52,12 +126,12 @@ router.post('/login', async (req, res) => {
     }
     
     const token = jwt.sign(
-      { userId: user._id, email: user.email, role: user.role },
+      { userId: user._id, email: user.email, role: user.role, companyId: user.companyId },
       getJwtSecret(),
       { expiresIn: '7d' }
     );
     
-    res.json({ token, user: { id: user._id, email: user.email, name: user.name, role: user.role } });
+    res.json({ token, user: { id: user._id, email: user.email, name: user.name, role: user.role, companyId: user.companyId } });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -66,7 +140,7 @@ router.post('/login', async (req, res) => {
 // Get current user
 router.get('/me', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('-password');
+    const user = await User.findById(req.user.userId).select('-password').populate('companyId');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }

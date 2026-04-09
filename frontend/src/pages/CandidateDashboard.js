@@ -1,20 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { resumeAPI, jobAPI, applicationAPI } from '../services/api';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { resumeAPI, jobAPI, applicationAPI, notificationAPI } from '../services/api';
 import { 
   BriefcaseBusiness, DollarSign, FileText, FileUp, IndianRupee, LayoutDashboard, 
   MapPin, Send, Sparkles, User2, Map, LayoutPanelLeft, Clock,
-  ChevronRight, BrainCircuit, Activity, BarChart3, AlertCircle, TrendingUp, CheckCircle, Target, Lightbulb, Zap, Phone, Mail, FileCheck2, Search, Menu, X, LogOut
+  ChevronRight, BrainCircuit, Activity, BarChart3, AlertCircle, TrendingUp, CheckCircle, Target, Lightbulb, Zap, Phone, Mail, FileCheck2, Search, Menu, X, LogOut, Bell
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AnimatedLogo from '../components/landing/AnimatedLogo';
 import LogoLink from '../components/ui/LogoLink';
 import ResumeUpload from '../components/ResumeUpload';
 import Button from '../components/ui/Button';
+import MyMatches from './MyMatches';
+import MyApplications from './MyApplications';
+import ProfileDrawer from '../components/ProfileDrawer';
 
-const CandidateDashboard = () => {
+const CandidateDashboard = ({ page }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Derive activeNav from route
+  const activeNav = page === 'matches' ? 'matches' : page === 'applications' ? 'applications' : 'dashboard';
   const [resumes, setResumes] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [isUploadResumeOpen, setIsUploadResumeOpen] = useState(false);
@@ -22,8 +29,8 @@ const CandidateDashboard = () => {
   const [isJobDetailOpen, setIsJobDetailOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState({ text: '', type: '' });
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeNav, setActiveNav] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
   
   const [stats, setStats] = useState({
     totalResumes: 0,
@@ -31,6 +38,9 @@ const CandidateDashboard = () => {
     recommendedJobs: 0,
     avgMatchScore: 0
   });
+
+  const [notifications, setNotifications] = useState([]);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const loadData = async () => {
     try {
@@ -56,6 +66,27 @@ const CandidateDashboard = () => {
       });
     } catch (error) {
       console.error('Error loading data:', error);
+    }
+  };
+
+  const loadNotifications = async () => {
+    try {
+      const res = await notificationAPI.getMyNotifications(10);
+      setNotifications(res.data);
+    } catch (err) {
+      console.error('Error loading notifications:', err);
+    }
+  };
+
+  const handleOpenNotifications = async () => {
+    setIsNotificationsOpen(!isNotificationsOpen);
+    if (!isNotificationsOpen && notifications.some(n => !n.read)) {
+      try {
+        await notificationAPI.markAsRead();
+        setNotifications(prev => prev.map(n => ({...n, read: true})));
+      } catch (err) {
+        console.error('Error marking notifications read:', err);
+      }
     }
   };
 
@@ -94,6 +125,7 @@ const CandidateDashboard = () => {
 
   useEffect(() => {
     loadData();
+    loadNotifications();
   }, []);
 
   const handleLogout = () => {
@@ -101,12 +133,13 @@ const CandidateDashboard = () => {
     navigate('/');
   };
 
-  const filteredJobs = jobs.filter(job => 
-    searchQuery === '' || 
+  const filteredJobs = jobs.filter(job => {
+    const companyStr = job.company?.name || job.company || '';
+    return searchQuery === '' || 
     job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    companyStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.location.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   return (
     <div className="landing-page min-h-screen bg-[#030014] text-slate-300 font-sans flex overflow-hidden">
@@ -132,48 +165,42 @@ const CandidateDashboard = () => {
           <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Menu</p>
           <nav className="space-y-1">
             <button 
-              onClick={() => { setActiveNav('dashboard'); setIsSidebarOpen(false); }}
+              onClick={() => { navigate('/candidate/dashboard'); setIsSidebarOpen(false); }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${activeNav === 'dashboard' ? 'bg-purple-600/20 text-purple-400 font-medium' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
             >
               <LayoutDashboard size={18} /> Dashboard
             </button>
             <button 
-              onClick={() => { setActiveNav('matches'); setIsSidebarOpen(false); }}
+              onClick={() => { navigate('/candidate/matches'); setIsSidebarOpen(false); }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${activeNav === 'matches' ? 'bg-purple-600/20 text-purple-400 font-medium' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
             >
               <Target size={18} /> My Matches
             </button>
             <button 
-              onClick={() => { setActiveNav('applications'); setIsSidebarOpen(false); }}
+              onClick={() => { navigate('/candidate/applications'); setIsSidebarOpen(false); }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${activeNav === 'applications' ? 'bg-purple-600/20 text-purple-400 font-medium' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
             >
               <Send size={18} /> Applications
             </button>
-            <Link 
-              to="/profile"
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-slate-400 hover:bg-white/5 hover:text-slate-200 no-underline`}
-            >
-              <User2 size={18} /> Profile
-            </Link>
           </nav>
         </div>
 
         <div className="p-4 border-t border-white/5">
-          <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-purple-500/20">
+          <div 
+            className="sidebar-profile flex items-center gap-3 px-2 py-2 rounded-xl group relative cursor-pointer hover:bg-white/5 transition-colors"
+            onClick={() => setIsProfileDrawerOpen(true)}
+          >
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-purple-500/20 z-10 shrink-0">
               {user?.name?.charAt(0) || 'C'}
             </div>
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 z-10">
               <p className="text-sm font-medium text-white truncate">{user?.name || 'Candidate'}</p>
-              <p className="text-xs text-slate-400 truncate">{user?.email || 'candidate@example.com'}</p>
+              <p className="text-[11px] text-slate-400 truncate uppercase tracking-widest mt-0.5">{user?.role || 'Candidate'}</p>
+            </div>
+            <div className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
             </div>
           </div>
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
-          >
-            <LogOut size={16} /> Sign out
-          </button>
         </div>
       </aside>
 
@@ -197,6 +224,44 @@ const CandidateDashboard = () => {
           </div>
           
           <div className="flex items-center gap-3 w-full sm:w-auto">
+            {/* Notification Bell */}
+            <div className="relative">
+              <button 
+                onClick={handleOpenNotifications}
+                className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-300 transition-colors relative"
+              >
+                <Bell size={20} />
+                {notifications.filter(n => !n.read).length > 0 && (
+                  <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white border-2 border-[#030014]">
+                    {notifications.filter(n => !n.read).length}
+                  </span>
+                )}
+              </button>
+              {isNotificationsOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsNotificationsOpen(false)} />
+                  <div className="absolute top-full right-0 mt-2 w-80 bg-[#0a0520] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-scale-in">
+                    <div className="p-4 border-b border-white/5 bg-white/[0.02]">
+                      <h3 className="font-bold text-white flex items-center gap-2"><Bell size={16} className="text-purple-400" /> Notifications</h3>
+                    </div>
+                    <div className="max-h-80 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <p className="p-6 text-sm text-center text-slate-500">No new notifications</p>
+                      ) : (
+                        notifications.map(n => (
+                          <div key={n._id} className={`p-4 border-b border-white/5 last:border-0 ${!n.read ? 'bg-purple-500/5' : 'bg-transparent'}`}>
+                            <h4 className="text-sm font-bold text-slate-200 mb-1">{n.title}</h4>
+                            <p className="text-xs text-slate-400 leading-relaxed">{n.message}</p>
+                            <p className="text-[10px] text-slate-500 mt-2">{new Date(n.createdAt).toLocaleString()}</p>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
             <div className="relative flex-1 sm:w-64">
               <input 
                 type="text" 
@@ -222,6 +287,13 @@ const CandidateDashboard = () => {
         <div className="flex-1 overflow-y-auto z-10 p-6 md:p-8 xl:p-12 scroll-smooth">
           <div className="max-w-7xl mx-auto space-y-8">
 
+            {/* Conditional Page Rendering */}
+            {page === 'matches' ? (
+              <MyMatches />
+            ) : page === 'applications' ? (
+              <MyApplications />
+            ) : (
+            <>
             {/* Status Messages */}
             {statusMessage.text && (
               <div className={`p-4 rounded-xl flex items-center gap-3 border ${
@@ -292,7 +364,7 @@ const CandidateDashboard = () => {
                                   </span>
                                 )}
                               </div>
-                              <p className="text-sm font-medium text-slate-300 mb-4">{job.company}</p>
+                              <p className="text-sm font-medium text-slate-300 mb-4">{job.company?.name || job.company}</p>
                               
                               <div className="flex flex-wrap gap-4 text-xs font-medium text-slate-400 mb-4">
                                 <span className="flex items-center gap-1.5"><MapPin size={14} /> {job.location}</span>
@@ -481,6 +553,8 @@ const CandidateDashboard = () => {
 
               </div>
             </div>
+            </>
+            )}
 
           </div>
         </div>
@@ -515,7 +589,7 @@ const CandidateDashboard = () => {
             
             <div className="p-6 space-y-8">
               <div className="flex flex-wrap gap-3">
-                <span className="px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20 text-sm font-medium">{selectedJob.company}</span>
+                <span className="px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20 text-sm font-medium">{selectedJob.company?.name || selectedJob.company}</span>
                 <span className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-slate-300 flex items-center gap-1.5">
                   <MapPin size={14} className="text-slate-500" /> {selectedJob.location}
                 </span>
@@ -567,6 +641,11 @@ const CandidateDashboard = () => {
           </div>
         </div>
       )}
+
+      <ProfileDrawer 
+        isOpen={isProfileDrawerOpen} 
+        onClose={() => setIsProfileDrawerOpen(false)} 
+      />
 
     </div>
   );

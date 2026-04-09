@@ -5,7 +5,7 @@ import Button from './ui/Button';
 
 const JobForm = ({ onJobCreated, onClose }) => {
   const [job, setJob] = useState({
-    title: '', company: '', description: '', requirements: '', eligibility: '', location: '', salary: ''
+    title: '', description: '', requirements: '', eligibility: '', location: '', salary: ''
   });
   const [requiredSkills, setRequiredSkills] = useState([]);
   const [skillDraft, setSkillDraft] = useState('');
@@ -48,7 +48,7 @@ const JobForm = ({ onJobCreated, onClose }) => {
         requirements: requirementsParts.join('\n\n'),
         eligibility: eligibilityParts.join('\n')
       });
-      setJob({ title: '', company: '', description: '', requirements: '', eligibility: '', location: '', salary: '' });
+      setJob({ title: '', description: '', requirements: '', eligibility: '', location: '', salary: '' });
       setRequiredSkills([]);
       setSkillDraft('');
       setExperienceLevel('mid');
@@ -94,23 +94,13 @@ const JobForm = ({ onJobCreated, onClose }) => {
             
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-slate-300 mb-1.5 drop-shadow-md">Job Title</label>
                   <input
                     className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all font-sans"
                     value={job.title}
                     onChange={(e) => setJob({...job, title: e.target.value})}
                     placeholder="e.g. Software Engineer"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-1.5 drop-shadow-md">Company</label>
-                  <input
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-all font-sans"
-                    value={job.company}
-                    onChange={(e) => setJob({...job, company: e.target.value})}
-                    placeholder="Your Company Name"
                     required
                   />
                 </div>

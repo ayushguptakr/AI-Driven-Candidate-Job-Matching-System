@@ -8,13 +8,15 @@ import Login from './components/Login';
 import Register from './components/Register';
 import RecruiterDashboard from './pages/RecruiterDashboard';
 import CandidateDashboard from './pages/CandidateDashboard';
-import Profile from './pages/Profile';
+import MyMatches from './pages/MyMatches';
+import MyApplications from './pages/MyApplications';
 import HomePage from './pages/HomePage';
+import InviteSignup from './pages/InviteSignup';
 import './styles/custom.css';
 
 function AppContent() {
   const location = useLocation();
-  const isFullPage = ['/', '/login', '/register', '/candidate/dashboard', '/recruiter/dashboard'].includes(location.pathname);
+  const isFullPage = ['/', '/login', '/register', '/candidate/dashboard', '/candidate/matches', '/candidate/applications', '/recruiter/dashboard'].includes(location.pathname) || location.pathname.startsWith('/invite');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -24,6 +26,7 @@ function AppContent() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/invite/:token" element={<InviteSignup />} />
           <Route
             path="/recruiter/dashboard"
             element={
@@ -41,10 +44,18 @@ function AppContent() {
             }
           />
           <Route
-            path="/profile"
+            path="/candidate/matches"
             element={
-              <ProtectedRoute>
-                <Profile />
+              <ProtectedRoute allowedRoles={['candidate']}>
+                <CandidateDashboard page="matches" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/candidate/applications"
+            element={
+              <ProtectedRoute allowedRoles={['candidate']}>
+                <CandidateDashboard page="applications" />
               </ProtectedRoute>
             }
           />

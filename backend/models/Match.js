@@ -7,6 +7,11 @@ const matchSchema = new mongoose.Schema({
   matchingSkills: [String],
   missingSkills: [String],
   feedback: { type: String },
+  recruiterDecision: { 
+    type: String, 
+    enum: ['none', 'shortlisted', 'rejected'], 
+    default: 'none' 
+  },
   createdAt: { type: Date, default: Date.now }
 });
 

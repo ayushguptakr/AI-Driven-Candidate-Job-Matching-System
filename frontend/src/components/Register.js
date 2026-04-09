@@ -6,7 +6,7 @@ import AnimatedLogo from './landing/AnimatedLogo';
 import Button from './ui/Button';
 
 const Register = () => {
-  const [formData, setFormData] = useState({ email: '', password: '', name: '', role: 'candidate' });
+  const [formData, setFormData] = useState({ email: '', password: '', name: '', role: 'candidate', companyName: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -23,7 +23,13 @@ const Register = () => {
     setLoading(true);
     setError('');
     try {
-      const user = await register(formData.email, formData.password, formData.name, formData.role);
+      const user = await register({
+        email: formData.email, 
+        password: formData.password, 
+        name: formData.name, 
+        role: formData.role,
+        companyName: formData.role === 'recruiter' ? formData.companyName : undefined
+      });
       localStorage.setItem('selectedRole', user.role);
       navigate(user.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard');
     } catch (err) {
@@ -51,11 +57,8 @@ const Register = () => {
 
           <div className="relative z-10">
             {/* Logo */}
-            <Link to="/" variant="unstyled" className="flex items-center gap-3 mb-12 group">
-              <AnimatedLogo size={44} />
-              <span className="text-white font-bold text-2xl tracking-tight group-hover:text-purple-200 transition-colors">
-                TalentMatch AI
-              </span>
+            <Link to="/" variant="unstyled" className="block mb-12 transform hover:scale-[1.02] transition-transform">
+              <AnimatedLogo size={80} withText={true} />
             </Link>
 
             {/* Headline */}
@@ -93,10 +96,9 @@ const Register = () => {
 
           <div className={`relative z-10 w-full max-w-[420px] transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             {/* Mobile Logo */}
-            <div className="landing-hide-lg flex items-center justify-center gap-2.5 mb-10">
-              <Link to="/" variant="unstyled" className="flex items-center gap-2.5">
-                <AnimatedLogo size={36} />
-                <span className="text-white font-bold text-xl tracking-tight">TalentMatch AI</span>
+            <div className="landing-hide-lg flex items-center justify-center mb-10">
+              <Link to="/" variant="unstyled" className="block">
+                <AnimatedLogo size={70} withText={true} />
               </Link>
             </div>
 
@@ -206,6 +208,22 @@ const Register = () => {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Company Name (Recruiter Only) */}
+              <div className={`transition-all duration-300 overflow-hidden ${formData.role === 'recruiter' ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <label htmlFor="company-name" className="block text-sm font-medium text-slate-300 mb-2">
+                  Company Name
+                </label>
+                <input
+                  type="text"
+                  id="company-name"
+                  value={formData.companyName}
+                  onChange={(e) => update('companyName', e.target.value)}
+                  required={formData.role === 'recruiter'}
+                  placeholder="Acme Corp"
+                  className="w-full px-4 py-3.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder-slate-500 text-sm outline-none transition-all duration-200 focus:border-purple-500/50 focus:bg-white/[0.06] focus:ring-2 focus:ring-purple-500/20"
+                />
               </div>
 
               {/* Submit */}

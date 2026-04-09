@@ -27,8 +27,8 @@ const LogoLink = ({ className = '', size = 46, onClick }) => {
       style={{ textDecoration: 'none' }}
     >
       <AnimatedLogo size={size} className="transition-transform duration-300 group-hover:scale-[1.05]" />
-      <span className="text-white font-bold text-xl tracking-tight group-hover:text-purple-300 transition-colors drop-shadow-sm">
-        TalentMatch AI
+      <span className="text-white font-bold text-xl tracking-tight drop-shadow-sm transition-all duration-300" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+        TalentMatch <span className="bg-clip-text text-transparent bg-gradient-to-br from-[#A78BFA] to-[#67E8F9] group-hover:opacity-90">AI</span>
       </span>
     </Link>
   );

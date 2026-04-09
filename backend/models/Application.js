@@ -9,6 +9,11 @@ const applicationSchema = new mongoose.Schema({
     enum: ['pending', 'reviewed', 'shortlisted', 'rejected'], 
     default: 'pending' 
   },
+  source: { 
+    type: String, 
+    enum: ['manual', 'ai_match'], 
+    default: 'manual' 
+  },
   appliedAt: { type: Date, default: Date.now }
 });
 

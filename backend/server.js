@@ -12,7 +12,7 @@ connectDB();
 app.use(cors({
   origin: ['https://ai-driven-candidate-job-matching-system-1.onrender.com', 'http://localhost:3000'],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -23,6 +23,11 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/jobs', require('./routes/jobs'));
 app.use('/api/resumes', require('./routes/resumes'));
 app.use('/api/applications', require('./routes/applications'));
+app.use('/api/matches', require('./routes/matches'));
+app.use('/api/recruiter', require('./routes/recruiter'));
+app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/invite', require('./routes/invite'));
+app.use('/api/company', require('./routes/company'));
 
 // Health check
 app.get('/api/health', (req, res) => {
