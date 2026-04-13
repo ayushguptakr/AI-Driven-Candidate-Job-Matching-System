@@ -67,7 +67,7 @@ const Modal = ({ open, title, children, onClose, maxWidth = 900 }) => {
             ×
           </button>
         </div>
-        <div style={{ padding: 20, overflowY: 'auto', maxHeight: 'calc(90vh - 84px)' }}>
+        <div className="custom-scroll" style={{ padding: 20, overflowY: 'auto', maxHeight: 'calc(90vh - 84px)' }}>
           {children}
         </div>
       </div>

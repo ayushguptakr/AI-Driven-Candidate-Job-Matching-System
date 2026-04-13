@@ -161,7 +161,7 @@ const CandidateDashboard = ({ page }) => {
           </button>
         </div>
 
-        <div className="p-4 flex-1 overflow-y-auto">
+        <div className="p-4 flex-1 overflow-y-auto custom-scroll">
           <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Menu</p>
           <nav className="space-y-1">
             <button 
@@ -244,7 +244,7 @@ const CandidateDashboard = ({ page }) => {
                     <div className="p-4 border-b border-white/5 bg-white/[0.02]">
                       <h3 className="font-bold text-white flex items-center gap-2"><Bell size={16} className="text-purple-400" /> Notifications</h3>
                     </div>
-                    <div className="max-h-80 overflow-y-auto">
+                    <div className="max-h-80 overflow-y-auto custom-scroll">
                       {notifications.length === 0 ? (
                         <p className="p-6 text-sm text-center text-slate-500">No new notifications</p>
                       ) : (
@@ -284,7 +284,7 @@ const CandidateDashboard = ({ page }) => {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto z-10 p-6 md:p-8 xl:p-12 scroll-smooth">
+        <div className="flex-1 overflow-y-auto z-10 p-6 md:p-8 xl:p-12 scroll-smooth custom-scroll">
           <div className="max-w-7xl mx-auto space-y-8">
 
             {/* Conditional Page Rendering */}
@@ -574,7 +574,7 @@ const CandidateDashboard = ({ page }) => {
           onClick={() => setIsJobDetailOpen(false)}
         >
           <div 
-            className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-[#0a0520] border border-white/10 rounded-2xl shadow-2xl animate-scale-in"
+            className="w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scroll bg-[#0a0520] border border-white/10 rounded-2xl shadow-2xl animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sticky top-0 bg-[#0a0520]/90 backdrop-blur-md border-b border-white/10 px-6 py-4 flex items-center justify-between z-10">

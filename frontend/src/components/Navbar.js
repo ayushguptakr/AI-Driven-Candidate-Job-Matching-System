@@ -87,7 +87,7 @@ const Navbar = () => {
                           </span>
                         )}
                       </div>
-                      <div className="max-h-[350px] overflow-y-auto">
+                      <div className="max-h-[350px] overflow-y-auto custom-scroll">
                         {notifications.length === 0 ? (
                           <div className="p-8 text-center text-slate-400 flex flex-col items-center">
                             <Bell size={24} className="mb-2 opacity-30" />

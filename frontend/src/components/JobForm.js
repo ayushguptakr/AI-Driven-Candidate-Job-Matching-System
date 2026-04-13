@@ -69,7 +69,7 @@ const JobForm = ({ onJobCreated, onClose }) => {
       >
         {/* Modal Content */}
         <div 
-          className="bg-gradient-to-b from-[#0a0520] to-[#030014] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
+          className="bg-gradient-to-b from-[#0a0520] to-[#030014] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto custom-scroll shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="sticky top-0 z-10 bg-[#0a0520]/90 backdrop-blur-md p-6 border-b border-white/5 flex items-center justify-between">

@@ -536,7 +536,7 @@ const RecruiterDashboard = () => {
           </div>
 
           {/* Scrollable Flow */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div className="custom-scroll" style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div>
               <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#e2e8f0', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Target size={14} style={{ color: '#818cf8' }} /> Complete Skill Breakdown
@@ -612,7 +612,7 @@ const RecruiterDashboard = () => {
           </button>
         </div>
 
-        <div className="p-4 flex-1 overflow-y-auto">
+        <div className="p-4 flex-1 overflow-y-auto custom-scroll">
           <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Recruitment</p>
           <nav className="space-y-1">
             <button 
@@ -735,7 +735,7 @@ const RecruiterDashboard = () => {
         </div>
 
         {/* Scrollable Layout */}
-        <div className="flex-1 overflow-y-auto p-6 scroll-smooth">
+        <div className="flex-1 overflow-y-auto p-6 scroll-smooth custom-scroll">
           
           {/* Stats Bar */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 shrink-0">

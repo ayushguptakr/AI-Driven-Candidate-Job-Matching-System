@@ -41,7 +41,7 @@ const ResumeUpload = ({ onResumeUploaded, onClose }) => {
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0a0520] border border-white/10 rounded-2xl shadow-2xl animate-scale-in"
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto custom-scroll bg-[#0a0520] border border-white/10 rounded-2xl shadow-2xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="sticky top-0 bg-[#0a0520]/90 backdrop-blur-md border-b border-white/10 px-6 py-4 flex items-center justify-between z-10">

@@ -37,7 +37,7 @@ const AnimatedLogo = ({ size = 48, className = '', withText = false }) => {
           fill="none"
           stroke={`url(#${id}-grad)`}
           strokeWidth="1.2"
-          opacity="0.5"
+          opacity="0.75"
           strokeLinejoin="round"
         >
           <animateTransform
