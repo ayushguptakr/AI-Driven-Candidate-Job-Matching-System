@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { Building2, User } from 'lucide-react';
 
 const recruiterData = {
   jobs: [
@@ -59,7 +60,10 @@ const ProductShowcase = () => {
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
-                {tab === 'recruiter' ? '🏢 Recruiter View' : '👤 Candidate View'}
+                <div className="flex items-center gap-2">
+                  {tab === 'recruiter' ? <Building2 size={18} /> : <User size={18} />}
+                  <span>{tab === 'recruiter' ? 'Recruiter View' : 'Candidate View'}</span>
+                </div>
               </button>
             ))}
           </div>

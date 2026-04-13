@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Link from './ui/Link';
 import AnimatedLogo from './landing/AnimatedLogo';
 import Button from './ui/Button';
+import { Zap, Target, Lock, User, Building2 } from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({ email: '', password: '', name: '', role: 'candidate', companyName: '' });
@@ -74,9 +75,9 @@ const Register = () => {
             {/* Feature list */}
             <div className="space-y-4">
               {[
-                { icon: '⚡', text: 'AI-powered resume analysis in seconds' },
-                { icon: '🎯', text: '96% matching accuracy with skill breakdown' },
-                { icon: '🔒', text: 'Secure, bias-reduced screening process' },
+                { icon: <Zap size={20} className="text-white" />, text: 'AI-powered resume analysis in seconds' },
+                { icon: <Target size={20} className="text-white" />, text: '96% matching accuracy with skill breakdown' },
+                { icon: <Lock size={20} className="text-white" />, text: 'Secure, bias-reduced screening process' },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-base">
@@ -182,8 +183,8 @@ const Register = () => {
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { value: 'candidate', label: 'Candidate', icon: '👤', desc: 'Find jobs' },
-                    { value: 'recruiter', label: 'Recruiter', icon: '🏢', desc: 'Hire talent' },
+                    { value: 'candidate', label: 'Candidate', icon: <User size={24} className="text-purple-400" />, desc: 'Find jobs' },
+                    { value: 'recruiter', label: 'Recruiter', icon: <Building2 size={24} className="text-purple-400" />, desc: 'Hire talent' },
                   ].map((role) => (
                     <button
                       key={role.value}

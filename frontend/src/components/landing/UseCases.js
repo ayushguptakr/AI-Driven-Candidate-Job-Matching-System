@@ -1,9 +1,10 @@
 import React from 'react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { Building2, User, Rocket } from 'lucide-react';
 
 const useCases = [
   {
-    emoji: '🏢',
+    icon: <Building2 className="text-purple-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" size={26} />,
     title: 'For Recruiters',
     description: 'Stop drowning in resumes. Post jobs and let AI rank candidates automatically so you focus only on the best fits.',
     benefits: [
@@ -15,7 +16,7 @@ const useCases = [
     gradient: 'from-purple-600 to-violet-600',
   },
   {
-    emoji: '👤',
+    icon: <User className="text-purple-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" size={26} />,
     title: 'For Candidates',
     description: 'Upload your resume once and discover the jobs that truly match your skills. No more guessing or spray-and-pray applications.',
     benefits: [
@@ -27,7 +28,7 @@ const useCases = [
     gradient: 'from-violet-600 to-indigo-600',
   },
   {
-    emoji: '🚀',
+    icon: <Rocket className="text-purple-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" size={26} />,
     title: 'For Startups',
     description: 'Scale your hiring without scaling your HR team. AI matching brings enterprise-level recruitment to teams of any size.',
     benefits: [
@@ -67,16 +68,16 @@ const UseCases = () => {
           {useCases.map((uc, i) => (
             <div
               key={i}
-              className={`group glass-card rounded-2xl p-6 h-full flex flex-col transition-all duration-500 hover:bg-white/[0.04] hover:border-purple-500/20 hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-500/10 ${
+              className={`group p-6 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-500/10 h-full flex flex-col ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
               }`}
               style={{ transitionDelay: `${300 + i * 150}ms` }}
             >
               {/* Icon */}
-              <div className="text-3xl mb-4">{uc.emoji}</div>
+              <div className="mb-4">{uc.icon}</div>
 
               <h3 className="text-xl font-bold text-white mb-3">{uc.title}</h3>
-              <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-1">{uc.description}</p>
+              <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-1">{uc.description}</p>
 
               {/* Benefits */}
               <ul className="space-y-3">

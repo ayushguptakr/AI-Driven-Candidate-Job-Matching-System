@@ -1,14 +1,15 @@
 import React from 'react';
 import { useScrollAnimation, useCountUp } from '../../hooks/useScrollAnimation';
+import { FileText, Target, Users, Building2 } from 'lucide-react';
 
 const TrustSection = () => {
   const [ref, isVisible] = useScrollAnimation();
 
   const stats = [
-    { value: 50000, suffix: '+', label: 'Resumes Analyzed', icon: '📄' },
-    { value: 96, suffix: '%', label: 'Matching Accuracy', icon: '🎯' },
-    { value: 2000, suffix: '+', label: 'Recruiters Onboarded', icon: '👥' },
-    { value: 500, suffix: '+', label: 'Companies Trust Us', icon: '🏢' },
+    { value: 50000, suffix: '+', label: 'Resumes Analyzed', icon: <FileText className="text-purple-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" size={26} /> },
+    { value: 96, suffix: '%', label: 'Matching Accuracy', icon: <Target className="text-purple-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" size={26} /> },
+    { value: 2000, suffix: '+', label: 'Recruiters Onboarded', icon: <Users className="text-purple-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" size={26} /> },
+    { value: 500, suffix: '+', label: 'Companies Trust Us', icon: <Building2 className="text-purple-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" size={26} /> },
   ];
 
   const logos = [
@@ -54,14 +55,14 @@ const StatCard = ({ stat, isVisible, delay }) => {
 
   return (
     <div
-      className="glass-card rounded-2xl p-6 text-center hover:bg-white/[0.05] hover:border-purple-500/20 transition-all duration-300 group"
+      className="p-6 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/30 transition-all duration-300 group flex flex-col items-center"
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="text-2xl mb-3">{stat.icon}</div>
+      <div className="mb-3">{stat.icon}</div>
       <div className="text-3xl sm:text-4xl font-extrabold text-white mb-1 tracking-tight">
         {count.toLocaleString()}{stat.suffix}
       </div>
-      <p className="text-slate-400 text-sm font-medium">{stat.label}</p>
+      <p className="text-gray-400 text-sm font-medium">{stat.label}</p>
     </div>
   );
 };

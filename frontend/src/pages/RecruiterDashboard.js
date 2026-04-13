@@ -396,23 +396,23 @@ const RecruiterDashboard = () => {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => handleCandidateAction(candidate._id, 'shortlisted')}
-                      className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                      className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                         pendingActions[candidate._id] === 'shortlisted' || (!pendingActions[candidate._id] && candidate.recruiterDecision === 'shortlisted')
                         ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' 
                         : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
                       }`}
                     >
-                      {pendingActions[candidate._id] === 'shortlisted' || candidate.recruiterDecision === 'shortlisted' ? '✅ Shortlisted' : 'Shortlist Candidate'}
+                      {pendingActions[candidate._id] === 'shortlisted' || candidate.recruiterDecision === 'shortlisted' ? <><CheckCircle size={14} /> Shortlisted</> : 'Shortlist Candidate'}
                     </button>
                     <button 
                       onClick={() => handleCandidateAction(candidate._id, 'rejected')}
-                      className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                      className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                         pendingActions[candidate._id] === 'rejected' || (!pendingActions[candidate._id] && candidate.recruiterDecision === 'rejected')
                         ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' 
                         : 'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20'
                       }`}
                     >
-                      {pendingActions[candidate._id] === 'rejected' || candidate.recruiterDecision === 'rejected' ? '❌ Rejected' : 'Reject Candidate'}
+                      {pendingActions[candidate._id] === 'rejected' || candidate.recruiterDecision === 'rejected' ? <><X size={14} /> Rejected</> : 'Reject Candidate'}
                     </button>
                   </div>
                 </div>
